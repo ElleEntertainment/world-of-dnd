@@ -1,0 +1,40 @@
+version: '3'
+services:
+  database:
+    image: mysql:8.0
+    container_name: database
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data-volume:/var/lib/mysql
+  backend:
+    build:
+      context: ./world-of-dnd-backend
+      dockerfile: Dockerfile
+    container_name: backend
+    environment:
+      - PORT=3000
+    ports:
+      - '3000:3000'
+    depends_on:
+      - database
+    volumes:
+      - ./world-of-dnd-backend/src:/app/src
+  frontend:
+    build: 
+      context: ./world-of-dnd-frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    depends_on:
+      - database
+    ports:
+      - 8081:8080
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./world-of-dnd-frontend/conf/nginx.conf:/opt/bitnami/nginx/conf/nginx.conf
