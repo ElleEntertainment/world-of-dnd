@@ -1,0 +1,54 @@
+<div class="min-h-screen flex items-center justify-center relative overflow-hidden"
+     style="background: url('/img/bg/volcano_bg.jpg') center center / cover no-repeat fixed;">
+  <!-- Ash particles -->
+  <div class="ash-container absolute inset-0 pointer-events-none z-10"></div>
+  <!-- Fireball cursor -->
+  <div id="fireball-cursor" class="fixed top-0 left-0 z-50 pointer-events-none" style="width:48px;height:48px;mix-blend-mode:plus-lighter;">
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="18" fill="url(#fireball)" fill-opacity="0.7"/>
+      <defs>
+        <radialGradient id="fireball" cx="0.5" cy="0.5" r="0.5" fx="0.6" fy="0.4">
+          <stop offset="0%" stop-color="#fbbf24"/>
+          <stop offset="60%" stop-color="#f87171"/>
+          <stop offset="100%" stop-color="#be185d" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+    </svg>
+  </div>
+  <div class="relative max-w-2xl w-full px-8 py-12 rounded-3xl shadow-2xl backdrop-blur-lg bg-white/60 border border-white/40 flex flex-col items-center z-20"
+    style="border-radius: 36px; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);">
+    <!-- Decorative circles -->
+    <div class="absolute -top-16 -left-16 w-40 h-40 bg-gradient-to-br from-blue-400 to-indigo-400 opacity-30 rounded-full blur-2xl"></div>
+    <div class="absolute -bottom-16 -right-16 w-40 h-40 bg-gradient-to-br from-pink-400 to-yellow-300 opacity-30 rounded-full blur-2xl"></div>
+    <!-- Logo/Icon -->
+    <div class="mb-6 z-10">
+      <svg width="64" height="64" fill="none" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="32" fill="url(#paint0_linear)" />
+        <path d="M32 16L40 48H24L32 16Z" fill="#fff" fill-opacity="0.9"/>
+        <defs>
+          <linearGradient id="paint0_linear" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6366F1"/>
+            <stop offset="1" stop-color="#06b6d4"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <h1 class="text-5xl font-extrabold mb-4 text-gray-900 drop-shadow-lg z-10">World of DnD</h1>
+    <p class="mb-8 text-lg text-gray-700 text-center z-10">Gestisci le tue sessioni di D&D con stile.<br>Un'app companion moderna, sicura e bellissima.</p>
+    <div class="flex flex-col sm:flex-row gap-4 w-full z-10 justify-center items-center">
+      <a routerLink="/auth/login" class="w-full sm:w-auto flex justify-center">
+        <button type="button" class="w-full sm:w-auto px-8 py-3 rounded-xl font-semibold shadow-lg bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-lg transition-all duration-200 hover:scale-105">
+          Login
+        </button>
+      </a>
+      <a routerLink="/auth/register" class="w-full sm:w-auto flex justify-center">
+        <button type="button" class="w-full sm:w-auto px-8 py-3 rounded-xl font-semibold shadow-lg bg-gradient-to-r from-green-400 to-blue-500 text-white text-lg transition-all duration-200 hover:scale-105">
+          Registrati
+        </button>
+      </a>
+    </div>
+    <div class="mt-8 text-gray-500 text-xs z-10">
+      &copy; 2025 World of DnD. Inspired by Apple glassmorphism.
+    </div>
+  </div>
+</div>

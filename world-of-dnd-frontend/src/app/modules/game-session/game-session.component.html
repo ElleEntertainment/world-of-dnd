@@ -1,0 +1,165 @@
+<div class="min-h-screen w-full relative overflow-hidden" [ngStyle]="{'background': 'url(' + backgroundUrl + ') center center / cover no-repeat fixed'}">
+  <!-- Top left: Character portrait and HP bar -->
+  <div class="absolute top-6 left-6 flex items-center z-20">
+    <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-yellow-700 shadow-lg bg-gray-900 flex items-center justify-center">
+      <!-- Placeholder character face -->
+      <img src="assets/img/character_face.png" alt="Character" class="w-full h-full object-cover" />
+    </div>
+    <div class="ml-4 flex flex-col">
+      <div class="text-lg font-bold text-white drop-shadow">Nome PG</div>
+      <div class="w-40 h-6 bg-gray-800 rounded-full mt-2 relative">
+        <div class="absolute left-0 top-0 h-6 rounded-full bg-gradient-to-r from-red-600 to-yellow-400 shadow-inner" [style.width.%]="(hpCurrent / hpMax) * 100"></div>
+        <div class="absolute left-0 top-0 w-full h-6 flex items-center justify-center text-xs font-bold text-white drop-shadow select-none">
+          <span *ngIf="!editingHpCurrent" (click)="setEditingHpCurrent(true)" class="cursor-pointer">{{ hpCurrent }}</span>
+          <input *ngIf="editingHpCurrent" type="number" min="0" [max]="hpMax" [value]="hpCurrent" (blur)="onHpCurrentChange($event)" (keydown.enter)="onHpCurrentChange($event)" class="w-12 px-1 py-0.5 rounded bg-gray-700 text-white border border-yellow-400 text-center" autofocus />
+          <span class="mx-1">/</span>
+          <span *ngIf="!editingHpMax" (click)="setEditingHpMax(true)" class="cursor-pointer">{{ hpMax }} HP</span>
+          <input *ngIf="editingHpMax" type="number" min="1" [value]="hpMax" (blur)="onHpMaxChange($event)" (keydown.enter)="onHpMaxChange($event)" class="w-12 px-1 py-0.5 rounded bg-gray-700 text-white border border-yellow-400 text-center" autofocus />
+        </div>
+      </div>
+      <div class="text-xs text-gray-400 mt-1">D&D {{ dndVersion }}</div>
+    </div>
+  </div>
+
+  <!-- Top right: Minimap -->
+  <div class="absolute top-6 right-6 z-20">
+    <div class="w-32 h-32 rounded-full border-4 border-yellow-700 shadow-lg bg-black flex items-center justify-center relative overflow-hidden">
+      <!-- Minimap placeholder -->
+      <span class="text-gray-400 text-xs">Minimappa</span>
+    </div>
+  </div>
+
+  <!-- Bottom center: Ability bar -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-2 bg-black/40 px-6 py-4 rounded-2xl shadow-2xl border border-yellow-700">
+    <ng-container *ngFor="let slot of abilityBar; let i = index">
+      <div
+        class="w-14 h-14 rounded-lg bg-gray-800 border-2 border-yellow-700 flex items-center justify-center shadow-lg cursor-pointer relative group"
+        (drop)="onDropOnBar(i, $event)"
+        (dragover)="allowDrop($event)"
+        (mouseenter)="hoveredAbility = slot"
+        (mouseleave)="hoveredAbility = null"
+      >
+        <ng-container *ngIf="slot">
+          <ng-container *ngIf="slot.img || slot.icon; else fallbackBarMain">
+            <img [src]="slot.img || slot.icon" [alt]="slot.name" class="w-10 h-10 object-contain" />
+          </ng-container>
+          <ng-template #fallbackBarMain>
+            <span class="inline-block w-10 h-10"><svg width="40" height="40" viewBox="0 0 56 56" fill="none">
+              <rect x="4" y="4" width="48" height="48" rx="12" fill="#eab308" stroke="#a16207" stroke-width="4"/>
+              <circle cx="28" cy="28" r="14" fill="#fde68a" stroke="#a16207" stroke-width="2"/>
+              <path d="M28 18v8l6 6" stroke="#a16207" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg></span>
+          </ng-template>
+          <div class="absolute bottom-0 left-1/2 -translate-x-1/2 mb-1 px-2 py-1 rounded bg-black/80 text-white text-xs opacity-0 group-hover:opacity-100 transition pointer-events-none z-[9999] w-80 max-w-xs flex flex-col items-center gap-2" style="white-space: pre-line;">
+            <ng-container *ngIf="slot.img || slot.icon; else fallbackTooltipBarMain">
+              <img [src]="slot.img || slot.icon" alt="img" class="w-14 h-14 mb-1" />
+            </ng-container>
+            <ng-template #fallbackTooltipBarMain>
+              <span class="inline-block w-14 h-14 mb-1"><svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                <rect x="4" y="4" width="48" height="48" rx="12" fill="#eab308" stroke="#a16207" stroke-width="4"/>
+                <circle cx="28" cy="28" r="14" fill="#fde68a" stroke="#a16207" stroke-width="2"/>
+                <path d="M28 18v8l6 6" stroke="#a16207" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg></span>
+            </ng-template>
+            <span class="font-bold text-yellow-300 text-lg">{{ slot.name }}</span>
+            <span class="text-white text-base">{{ slot.description }}</span>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Bottom right: WoW-style menu (rectangular buttons) -->
+  <div class="absolute bottom-8 right-8 z-30 flex flex-col items-end gap-2">
+    <div class="flex flex-row gap-2 flex-wrap justify-end max-w-xs">
+      <button class="w-16 h-12 rounded-lg bg-gray-800 border-2 border-yellow-700 shadow-lg flex items-center justify-center hover:bg-yellow-700 transition-colors" title="Personaggio">
+        <img src="assets/img/menu_character.png" alt="Personaggio" class="w-8 h-8" />
+      </button>
+      <button class="w-16 h-12 rounded-lg bg-gray-800 border-2 border-yellow-700 shadow-lg flex items-center justify-center hover:bg-yellow-700 transition-colors" title="Abilità" (click)="openAbilities()">
+        <img src="assets/img/menu_spellbook.png" alt="Abilità" class="w-8 h-8" />
+      </button>
+      <button class="w-16 h-12 rounded-lg bg-gray-800 border-2 border-yellow-700 shadow-lg flex items-center justify-center hover:bg-yellow-700 transition-colors" title="Talenti" (click)="openTalents()">
+        <img src="assets/img/menu_talents.png" alt="Talenti" class="w-8 h-8" />
+      </button>
+      <button class="w-16 h-12 rounded-lg bg-gray-800 border-2 border-yellow-700 shadow-lg flex items-center justify-center hover:bg-yellow-700 transition-colors" title="Inventario" (click)="openBag()">
+        <img src="assets/img/menu_bag.png" alt="Inventario" class="w-8 h-8" />
+      </button>
+      <button class="w-16 h-12 rounded-lg bg-gray-800 border-2 border-yellow-700 shadow-lg flex items-center justify-center hover:bg-yellow-700 transition-colors" title="Sessione" (click)="openSessionInfo()">
+        <img src="assets/img/menu_info.png" alt="Sessione" class="w-8 h-8" />
+      </button>
+      <button class="w-16 h-12 rounded-lg bg-gray-800 border-2 border-yellow-700 shadow-lg flex items-center justify-center hover:bg-yellow-700 transition-colors" title="Menu">
+        <img src="assets/img/menu_main.png" alt="Menu" class="w-8 h-8" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Bag Modal -->
+  <app-bag-modal
+    *ngIf="showBag"
+    [items]="bagItems"
+    [gold]="gold"
+    [silver]="silver"
+    [copper]="copper"
+    (close)="closeBag()"
+    (update)="updateBag($event)"
+    (openCoins)="openCoins()">
+  </app-bag-modal>
+
+  <!-- Coins Modal -->
+  <app-coins-modal
+    *ngIf="showCoins"
+    [gold]="gold"
+    [silver]="silver"
+    [copper]="copper"
+    (close)="closeCoins()"
+    (update)="updateCoins($event)">
+  </app-coins-modal>
+
+  <!-- Abilities Modal -->
+  <app-abilities-modal
+    *ngIf="showAbilities"
+    [abilities]="allAbilities"
+    [abilityBar]="abilityBar"
+    (close)="closeAbilities()"
+    (assignAbility)="assignAbilityToBar($event)">
+  </app-abilities-modal>
+
+  <!-- Talents Modal -->
+  <app-talents-modal
+    *ngIf="showTalents"
+    [talents]="allTalents"
+    (close)="closeTalents()">
+  </app-talents-modal>
+
+  <!-- Session Info Modal -->
+  <div *ngIf="showSessionInfo" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+    <div class="bg-gray-900 rounded-2xl shadow-2xl border-4 border-yellow-700 max-w-lg w-full p-6 flex flex-col relative">
+      <button (click)="closeSessionInfo()" class="absolute top-3 right-3 text-gray-300 hover:text-red-500 text-2xl font-bold">&times;</button>
+      <h2 class="text-2xl font-bold text-yellow-400 mb-4 text-center">Info Sessione</h2>
+      <div class="mb-4">
+        <div class="font-semibold text-gray-300 mb-2">Giocatori:</div>
+        <div class="flex flex-col gap-1">
+          <div *ngFor="let player of sessionPlayers" class="flex items-center gap-2">
+            <span class="font-bold text-white">{{ player.character }}</span>
+            <span class="text-gray-400 text-xs">({{ player.name }})</span>
+            <span [ngClass]="player.alive ? 'text-green-400' : 'text-red-500'">
+              {{ player.alive ? 'Vivo' : 'Morto' }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="mb-2">
+        <span class="font-semibold text-gray-300">Versione D&D:</span>
+        <span class="text-yellow-300 ml-2">{{ dndVersion }}</span>
+      </div>
+      <div class="mb-2">
+        <span class="font-semibold text-gray-300">Master:</span>
+        <span class="text-yellow-300 ml-2">{{ sessionMaster }}</span>
+      </div>
+      <div>
+        <span class="font-semibold text-gray-300">Inizio campagna:</span>
+        <span class="text-yellow-300 ml-2">{{ sessionStartDate }}</span>
+      </div>
+    </div>
+  </div>
+</div>

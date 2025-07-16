@@ -12,6 +12,21 @@ services:
       - "3306:3306"
     volumes:
       - ./data-volume:/var/lib/mysql
+
+  init-migrations:
+    image: mysql:8.0
+    container_name: init-migrations
+    depends_on:
+      - database
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - ./sql:/sql
+    entrypoint: ["/bin/bash", "/sql/run-migrations.sh"]
+
   backend:
     build:
       context: ./world-of-dnd-backend
@@ -23,6 +38,7 @@ services:
       - '3000:3000'
     depends_on:
       - database
+      - init-migrations
     volumes:
       - ./world-of-dnd-backend/src:/app/src
   frontend:
@@ -32,6 +48,7 @@ services:
     container_name: frontend
     depends_on:
       - database
+      - init-migrations
     ports:
       - 8081:8080
     environment:

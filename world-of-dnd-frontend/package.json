@@ -2,40 +2,45 @@
   "name": "world-of-dnd-frontend",
   "version": "0.0.0",
   "scripts": {
-    "ng": "npx ng",
-    "start": "npx ng serve",
-    "build": "npx ng build",
-    "watch": "npx ng build --watch --configuration development",
-    "test": "npx ng test"
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e"
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^19.1.0",
-    "@angular/common": "^19.1.0",
-    "@angular/compiler": "^19.1.0",
-    "@angular/core": "^19.1.0",
-    "@angular/forms": "^19.1.0",
-    "@angular/platform-browser": "^19.1.0",
-    "@angular/platform-browser-dynamic": "^19.1.0",
-    "@angular/router": "^19.1.0",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "~0.15.0"
-  },
-  "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.9.5"
+    "@angular/animations": "^17.0.0",
+    "@angular/cdk": "^17.3.10",
+    "@angular/common": "^17.0.0",
+    "@angular/compiler": "^17.0.0",
+    "@angular/core": "^17.0.0",
+    "@angular/forms": "^17.3.12",
+    "@angular/material": "^17.3.10",
+    "@angular/platform-browser": "^17.0.0",
+    "@angular/platform-browser-dynamic": "^17.0.0",
+    "@angular/router": "^17.0.0",
+    "gsap": "^3.13.0",
+    "rxjs": "^7.8.1",
+    "tslib": "^2.6.2",
+    "zone.js": "^0.14.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^19.1.5",
-    "@angular/cli": "^19.1.5",
-    "@angular/compiler-cli": "^19.1.0",
-    "@types/jasmine": "~5.1.0",
-    "jasmine-core": "~5.5.0",
-    "karma": "~6.4.0",
+    "@angular-devkit/build-angular": "^17.0.0",
+    "@angular/cli": "^17.0.0",
+    "@angular/compiler-cli": "^17.0.0",
+    "@types/jasmine": "~4.3.0",
+    "@types/node": "^20.4.2",
+    "autoprefixer": "^10.4.19",
+    "jasmine-core": "~4.6.0",
+    "karma": "~6.4.2",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.7.2"
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.1",
+    "typescript": "~5.2.2"
   }
 }

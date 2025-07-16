@@ -1,0 +1,47 @@
+.ash-particle {
+  position: absolute;
+  top: -16px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 60% 40%, #e5e7eb 60%, #bdbdbd 100%);
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 12;
+  animation: ash-fall-cullato 7s linear infinite;
+}
+
+@keyframes ash-fall-cullato {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0.7;
+  }
+  10% {
+    transform: translateY(10vh) translateX(-10px) scale(1.1);
+  }
+  20% {
+    transform: translateY(20vh) translateX(10px) scale(1.05);
+  }
+  30% {
+    transform: translateY(30vh) translateX(-12px) scale(1.1);
+  }
+  40% {
+    transform: translateY(40vh) translateX(12px) scale(1.05);
+  }
+  50% {
+    transform: translateY(50vh) translateX(-14px) scale(1.1);
+  }
+  60% {
+    transform: translateY(60vh) translateX(14px) scale(1.05);
+  }
+  70% {
+    transform: translateY(70vh) translateX(-16px) scale(1.1);
+  }
+  80% {
+    transform: translateY(80vh) translateX(16px) scale(1.05);
+  }
+  100% {
+    transform: translateY(110vh) translateX(0) scale(1);
+    opacity: 0;
+  }
+}

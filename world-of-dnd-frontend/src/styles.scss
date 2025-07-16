@@ -1,1 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fix Angular Material vertical bar bug in mat-form-field outline (Apple style) */
+.mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline .mdc-notched-outline__trailing {
+  border-right-width: 0 !important;
+}
+
 /* You can add global styles to this file, and also import other style files */
