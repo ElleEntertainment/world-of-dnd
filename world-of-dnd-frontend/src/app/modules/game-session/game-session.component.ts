@@ -1,7 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BagItem } from './bag/bag-modal.component';
-import { Ability } from './abilities/abilities-modal.component';
+import { Spell } from './spells/spells-modal.component';
 import { Talent } from './talents/talents-modal.component';
 import { GameSessionStorageService, LocalGameSessionData } from './game-session-storage.service';
 
@@ -23,7 +23,7 @@ export class GameSessionComponent implements OnInit {
   showBag = false;
   showCoins = false;
   showSessionInfo = false;
-  showAbilities = false;
+  showSpells = false;
   showTalents = false;
   showCharacter = false;
   showCharTooltip = false;
@@ -52,7 +52,7 @@ export class GameSessionComponent implements OnInit {
   sessionStartDate = '2024-10-01';
 
   // Abilità mock senza icone
-  allAbilities: Ability[] = [
+  allSpells: Spell[] = [
     { id: 'fireball', name: 'Palla di Fuoco', description: 'Lancia una palla di fuoco che infligge 8d6 danni da fuoco.', icon: '' },
     { id: 'heal', name: 'Cura Ferite', description: 'Cura 2d8+3 punti ferita a un bersaglio.', icon: '' },
     { id: 'ice', name: 'Dardo di Ghiaccio', description: 'Colpisce il nemico con un dardo gelido.', icon: '' },
@@ -69,7 +69,7 @@ export class GameSessionComponent implements OnInit {
     { id: 'cleanse', name: 'Purificazione', description: 'Rimuove effetti negativi.', icon: '' },
     { id: 'summon', name: 'Evoca Famiglio', description: 'Evoca un piccolo aiutante.', icon: '' },
     { id: 'teleport', name: 'Teletrasporto', description: 'Ti sposti istantaneamente.', icon: '' },
-    // ...altre abilità per test paginazione
+    // ...altre spell per test paginazione
   ];
 
   // Talenti mock senza icone
@@ -83,9 +83,9 @@ export class GameSessionComponent implements OnInit {
     // ...altri talenti
   ];
 
-  abilityBar: (Ability | null)[] = Array(10).fill(null);
+  spellBar: (Spell | null)[] = Array(10).fill(null);
 
-  hoveredAbility: Ability | null = null;
+  hoveredSpell: Spell | null = null;
 
   // Character modal state
   characterSheet: any = {};
@@ -108,7 +108,7 @@ export class GameSessionComponent implements OnInit {
     if (!this.campaignId) return;
     const data: LocalGameSessionData = {
       character: this.characterSheet,
-      abilityBar: this.abilityBar,
+      spellBar: this.spellBar,
       bagItems: this.bagItems,
       gold: this.gold,
       silver: this.silver,
@@ -128,7 +128,7 @@ export class GameSessionComponent implements OnInit {
       const data = this.storage.load(this.campaignId);
       if (data) {
         if (data.character) this.characterSheet = data.character;
-        if (data.abilityBar) this.abilityBar = data.abilityBar;
+        if (data.spellBar) this.spellBar = data.spellBar;
         if (data.bagItems) this.bagItems = data.bagItems;
         if (typeof data.gold === 'number') this.gold = data.gold;
         if (typeof data.silver === 'number') this.silver = data.silver;
@@ -239,11 +239,11 @@ export class GameSessionComponent implements OnInit {
     this.showSessionInfo = false;
   }
 
-  openAbilities() {
-    this.showAbilities = true;
+  openSpells() {
+    this.showSpells = true;
   }
-  closeAbilities() {
-    this.showAbilities = false;
+  closeSpells() {
+    this.showSpells = false;
     this.persistAll();
   }
 
@@ -263,18 +263,18 @@ export class GameSessionComponent implements OnInit {
     this.persistAll();
   }
 
-  assignAbilityToBar({ ability, slot }: { ability: Ability, slot: number }) {
-    this.abilityBar[slot] = ability;
+  assignSpellToBar({ spell, slot }: { spell: Spell, slot: number }) {
+    this.spellBar[slot] = spell;
     this.persistAll();
   }
 
-  // Drag & drop handlers for ability bar (from spellbook modal)
+  // Drag & drop handlers for spell bar (from spellbook modal)
   onDropOnBar(slot: number, event: any) {
     event.preventDefault();
-    const abilityId = event.dataTransfer?.getData('abilityId');
-    const ability = this.allAbilities.find(a => a.id === abilityId);
-    if (ability) {
-      this.abilityBar[slot] = ability;
+    const spellId = event.dataTransfer?.getData('spellId');
+    const spell = this.allSpells.find(a => a.id === spellId);
+    if (spell) {
+      this.spellBar[slot] = spell;
       this.persistAll();
     }
   }

@@ -7,40 +7,39 @@
 </ng-template>
 
 <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-  <div class="bg-yellow-100 rounded-2xl shadow-2xl border-4 border-yellow-700 w-full max-w-3xl max-h-[95vh] p-0 flex flex-col relative overflow-hidden abilities-book">
+  <div class="bg-yellow-100 rounded-2xl shadow-2xl border-4 border-yellow-700 w-full max-w-3xl max-h-[95vh] p-0 flex flex-col relative overflow-hidden spells-book">
     <button (click)="close.emit()" class="absolute top-3 right-3 text-gray-700 hover:text-red-500 text-2xl font-bold z-20">&times;</button>
     <!-- Search bar -->
     <div class="flex flex-row items-center justify-center px-8 pt-6 pb-2">
       <input
         type="text"
         [(ngModel)]="search"
-        placeholder="Cerca abilità..."
+        placeholder="Cerca incantesimi..."
         class="w-full max-w-xs px-3 py-2 rounded-lg border border-yellow-700 bg-yellow-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-700"
       />
     </div>
     <div class="flex flex-row flex-1 overflow-y-auto">
       <!-- Book left page -->
       <div class="flex-1 p-4 flex flex-col min-w-0">
-        <h2 class="text-2xl font-bold text-yellow-900 mb-4 text-center">Spellbook</h2>
+        <h2 class="text-2xl font-bold text-yellow-900 mb-4 text-center">Incantesimi</h2>
         <div class="grid grid-cols-2 gap-4">
-          <ng-container *ngFor="let ability of pagedAbilities.slice(0, 8); let idx = index">
+          <ng-container *ngFor="let spell of pagedSpells.slice(0, 8); let idx = index">
             <div class="flex flex-col items-center">
               <div
-                class="w-24 h-32 rounded-lg bg-yellow-200 border-2 border-yellow-700 flex items-center justify-center shadow-lg cursor-grab relative group overflow-visible"
+                class="w-24 h-32 rounded-lg bg-yellow-200 border-2 border-yellow-700 flex items-center justify-center shadow-lg relative group overflow-visible"
                 draggable="true"
-                (dragstart)="onDragStart($event, ability)"
-                [attr.data-tooltip]="ability.description"
+                (dragstart)="onDragStart($event, spell)"
               >
                 <span class="relative w-20 h-20 flex items-center justify-center pointer-events-none">
-                  <ng-container *ngIf="ability.img || ability.icon; else fallback">
-                    <img [src]="ability.img || ability.icon" [alt]="ability.name" class="w-full h-full object-contain" />
+                  <ng-container *ngIf="spell.img || spell.icon; else fallback">
+                    <img [src]="spell.img || spell.icon" [alt]="spell.name" class="w-full h-full object-contain" />
                   </ng-container>
                   <ng-template #fallback>
                     <span class="inline-block w-full h-full"><ng-container *ngTemplateOutlet="fallbackSvg"></ng-container></span>
                   </ng-template>
                 </span>
                 <div
-                  class="spell-tooltip absolute mb-2 px-4 py-3 rounded-xl bg-black/90 text-white text-base opacity-0 group-hover:opacity-100 transition pointer-events-none z-[9999] w-80 max-w-xs flex flex-col items-center gap-2"
+                  class="spell-tooltip absolute mb-2 px-4 py-3 rounded-xl bg-black/90 text-white text-base opacity-0 group-hover:opacity-100 transition pointer-events-none z-[99999] w-80 max-w-xs flex flex-col items-center gap-2"
                   [ngStyle]="{
                     left: idx % 2 === 0 ? '0' : 'auto',
                     right: idx % 2 === 1 ? '0' : 'auto',
@@ -48,43 +47,42 @@
                   }"
                   style="white-space: pre-line;"
                 >
-                  <ng-container *ngIf="ability.img || ability.icon; else fallbackTooltip">
-                    <img [src]="ability.img || ability.icon" alt="img" class="w-14 h-14 object-contain mb-1" />
+                  <ng-container *ngIf="spell.img || spell.icon; else fallbackTooltip">
+                    <img [src]="spell.img || spell.icon" alt="img" class="w-14 h-14 object-contain mb-1" />
                   </ng-container>
                   <ng-template #fallbackTooltip>
                     <span class="inline-block w-14 h-14 mb-1"><ng-container *ngTemplateOutlet="fallbackSvg"></ng-container></span>
                   </ng-template>
-                  <span class="font-bold text-yellow-300 text-lg">{{ ability.name }}</span>
-                  <span class="text-white text-base">{{ ability.description }}</span>
+                  <span class="font-bold text-yellow-300 text-lg">{{ spell.name }}</span>
+                  <span class="text-white text-base">{{ spell.description }}</span>
                 </div>
               </div>
-              <span class="block text-xs font-bold text-yellow-900 text-center z-10 mt-1 truncate w-20" title="{{ ability.name }}">{{ ability.name }}</span>
+              <span class="block text-xs font-bold text-yellow-900 text-center z-10 mt-1 truncate w-20" title="{{ spell.name }}">{{ spell.name }}</span>
             </div>
           </ng-container>
         </div>
       </div>
       <!-- Book right page -->
       <div class="flex-1 p-4 flex flex-col min-w-0 border-l-2 border-yellow-700">
-        <h2 class="text-2xl font-bold text-yellow-900 mb-4 text-center invisible">Spellbook</h2>
+        <h2 class="text-2xl font-bold text-yellow-900 mb-4 text-center invisible">Incantesimi</h2>
         <div class="grid grid-cols-2 gap-4">
-          <ng-container *ngFor="let ability of pagedAbilities.slice(8, 16); let idx = index">
+          <ng-container *ngFor="let spell of pagedSpells.slice(8, 16); let idx = index">
             <div class="flex flex-col items-center">
               <div
-                class="w-24 h-32 rounded-lg bg-yellow-200 border-2 border-yellow-700 flex items-center justify-center shadow-lg cursor-grab relative group overflow-visible"
+                class="w-24 h-32 rounded-lg bg-yellow-200 border-2 border-yellow-700 flex items-center justify-center shadow-lg relative group overflow-visible"
                 draggable="true"
-                (dragstart)="onDragStart($event, ability)"
-                [attr.data-tooltip]="ability.description"
+                (dragstart)="onDragStart($event, spell)"
               >
                 <span class="relative w-20 h-20 flex items-center justify-center pointer-events-none">
-                  <ng-container *ngIf="ability.img || ability.icon; else fallback2">
-                    <img [src]="ability.img || ability.icon" [alt]="ability.name" class="w-full h-full object-contain" />
+                  <ng-container *ngIf="spell.img || spell.icon; else fallback2">
+                    <img [src]="spell.img || spell.icon" [alt]="spell.name" class="w-full h-full object-contain" />
                   </ng-container>
                   <ng-template #fallback2>
                     <span class="inline-block w-full h-full"><ng-container *ngTemplateOutlet="fallbackSvg"></ng-container></span>
                   </ng-template>
                 </span>
                 <div
-                  class="spell-tooltip absolute mb-2 px-4 py-3 rounded-xl bg-black/90 text-white text-base opacity-0 group-hover:opacity-100 transition pointer-events-none z-[9999] w-80 max-w-xs flex flex-col items-center gap-2"
+                  class="spell-tooltip absolute mb-2 px-4 py-3 rounded-xl bg-black/90 text-white text-base opacity-0 group-hover:opacity-100 transition pointer-events-none z-[99999] w-80 max-w-xs flex flex-col items-center gap-2"
                   [ngStyle]="{
                     left: idx % 2 === 0 ? '0' : 'auto',
                     right: idx % 2 === 1 ? '0' : 'auto',
@@ -92,23 +90,22 @@
                   }"
                   style="white-space: pre-line;"
                 >
-                  <ng-container *ngIf="ability.img || ability.icon; else fallbackTooltip2">
-                    <img [src]="ability.img || ability.icon" alt="img" class="w-14 h-14 object-contain mb-1" />
+                  <ng-container *ngIf="spell.img || spell.icon; else fallbackTooltip2">
+                    <img [src]="spell.img || spell.icon" alt="img" class="w-14 h-14 object-contain mb-1" />
                   </ng-container>
                   <ng-template #fallbackTooltip2>
                     <span class="inline-block w-14 h-14 mb-1"><ng-container *ngTemplateOutlet="fallbackSvg"></ng-container></span>
                   </ng-template>
-                  <span class="font-bold text-yellow-300 text-lg">{{ ability.name }}</span>
-                  <span class="text-white text-base">{{ ability.description }}</span>
+                  <span class="font-bold text-yellow-300 text-lg">{{ spell.name }}</span>
+                  <span class="text-white text-base">{{ spell.description }}</span>
                 </div>
               </div>
-              <span class="block text-xs font-bold text-yellow-900 text-center z-10 mt-1 truncate w-20" title="{{ ability.name }}">{{ ability.name }}</span>
+              <span class="block text-xs font-bold text-yellow-900 text-center z-10 mt-1 truncate w-20" title="{{ spell.name }}">{{ spell.name }}</span>
             </div>
           </ng-container>
         </div>
       </div>
     </div>
-    <!-- Pagination and bar preview -->
     <div class="flex flex-row items-center justify-between px-8 py-4 bg-yellow-200 border-t-2 border-yellow-700">
       <div>
         <button (click)="prevPage()" [disabled]="page === 0" class="px-3 py-1 rounded bg-yellow-700 text-white font-bold hover:bg-yellow-600 transition disabled:opacity-50"><</button>
@@ -116,7 +113,7 @@
         <button (click)="nextPage()" [disabled]="page === totalPages - 1" class="px-3 py-1 rounded bg-yellow-700 text-white font-bold hover:bg-yellow-600 transition disabled:opacity-50">></button>
       </div>
       <div class="flex gap-2 bg-black/20 px-4 py-2 rounded-xl border border-yellow-700">
-        <ng-container *ngFor="let slot of abilityBar; let i = index">
+        <ng-container *ngFor="let slot of spellBar; let i = index">
           <div
             class="w-12 h-12 rounded-lg bg-gray-800 border-2 border-yellow-700 flex items-center justify-center shadow-lg cursor-pointer relative group overflow-visible"
             (drop)="onDropOnBar(i, $event)"
@@ -145,6 +142,5 @@
           </div>
         </ng-container>
       </div>
-    </div>
   </div>
 </div>

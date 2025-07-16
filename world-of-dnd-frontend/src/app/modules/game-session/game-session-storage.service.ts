@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 export interface LocalGameSessionData {
   character: any;
-  abilityBar: any[];
+  spellBar: any[];
   bagItems: any[];
   gold: number;
   silver: number;

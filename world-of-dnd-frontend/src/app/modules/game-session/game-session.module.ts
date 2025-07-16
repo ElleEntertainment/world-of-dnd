@@ -6,7 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { GameSessionComponent } from './game-session.component';
 import { BagModalComponent } from './bag/bag-modal.component';
 import { CoinsModalComponent } from './bag/coins-modal.component';
-import { AbilitiesModalComponent } from './abilities/abilities-modal.component';
+import { SpellsModalComponent } from './spells/spells-modal.component';
 import { TalentsModalComponent } from './talents/talents-modal.component';
 import { CharacterModalComponent } from './character/character-modal.component';
 
@@ -20,7 +20,7 @@ const routes: Routes = [
     GameSessionComponent,
     BagModalComponent,
     CoinsModalComponent,
-    AbilitiesModalComponent,
+    SpellsModalComponent,
     TalentsModalComponent,
     CharacterModalComponent
   ],

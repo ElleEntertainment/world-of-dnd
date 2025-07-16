@@ -91,15 +91,15 @@
       <span class="text-gray-400 text-xs">Minimappa</span>
     </div>
   </div>
-  <!-- Bottom center: Ability bar -->
+  <!-- Bottom center: Spell bar -->
   <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-2 bg-black/40 px-6 py-4 rounded-2xl shadow-2xl border border-yellow-700">
-    <ng-container *ngFor="let slot of abilityBar; let i = index">
+    <ng-container *ngFor="let slot of spellBar; let i = index">
       <div
         class="w-14 h-14 rounded-lg bg-gray-800 border-2 border-yellow-700 flex items-center justify-center shadow-lg cursor-pointer relative group"
         (drop)="onDropOnBar(i, $event)"
         (dragover)="allowDrop($event)"
-        (mouseenter)="hoveredAbility = slot"
-        (mouseleave)="hoveredAbility = null"
+        (mouseenter)="hoveredSpell = slot"
+        (mouseleave)="hoveredSpell = null"
       >
         <ng-container *ngIf="slot">
           <ng-container *ngIf="slot.img || slot.icon; else fallbackBarMain">
@@ -136,8 +136,8 @@
       <button class="w-16 h-12 rounded-lg bg-gray-800 border-2 border-yellow-700 shadow-lg flex items-center justify-center hover:bg-yellow-700 transition-colors" title="Personaggio" (click)="openCharacter()">
         <img src="assets/img/menu_character.png" alt="Personaggio" class="w-8 h-8" />
       </button>
-      <button class="w-16 h-12 rounded-lg bg-gray-800 border-2 border-yellow-700 shadow-lg flex items-center justify-center hover:bg-yellow-700 transition-colors" title="Abilità" (click)="openAbilities()">
-        <img src="assets/img/menu_spellbook.png" alt="Abilità" class="w-8 h-8" />
+      <button class="w-16 h-12 rounded-lg bg-gray-800 border-2 border-yellow-700 shadow-lg flex items-center justify-center hover:bg-yellow-700 transition-colors" title="Incantesimi" (click)="openSpells()">
+        <img src="assets/img/menu_spellbook.png" alt="Incantesimi" class="w-8 h-8" />
       </button>
       <button class="w-16 h-12 rounded-lg bg-gray-800 border-2 border-yellow-700 shadow-lg flex items-center justify-center hover:bg-yellow-700 transition-colors" title="Talenti" (click)="openTalents()">
         <img src="assets/img/menu_talents.png" alt="Talenti" class="w-8 h-8" />
@@ -173,14 +173,14 @@
     (close)="closeCoins()"
     (update)="updateCoins($event)">
   </app-coins-modal>
-  <!-- Abilities Modal -->
-  <app-abilities-modal
-    *ngIf="showAbilities"
-    [abilities]="allAbilities"
-    [abilityBar]="abilityBar"
-    (close)="closeAbilities()"
-    (assignAbility)="assignAbilityToBar($event)">
-  </app-abilities-modal>
+  <!-- Spells Modal -->
+  <app-spells-modal
+    *ngIf="showSpells"
+    [spells]="allSpells"
+    [spellBar]="spellBar"
+    (close)="closeSpells()"
+    (assignSpell)="assignSpellToBar($event)">
+  </app-spells-modal>
   <!-- Talents Modal -->
   <app-talents-modal
     *ngIf="showTalents"
