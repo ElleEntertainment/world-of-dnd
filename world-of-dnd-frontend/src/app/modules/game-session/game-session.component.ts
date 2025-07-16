@@ -1,15 +1,64 @@
+/* --- AGGIUNTA SOLO LA LOGICA PER LE SKILL, SENZA TOCCARE ALTRO --- */
 import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BagItem } from './bag/bag-modal.component';
-import { Spell } from './spells/spells-modal.component';
 import { Talent } from './talents/talents-modal.component';
 import { GameSessionStorageService, LocalGameSessionData } from './game-session-storage.service';
+import { SkillRow } from './skills/skills-modal.component';
+import { Spell } from './spells/spells-modal.component';
 
 interface PlayerInfo {
   name: string;
   character: string;
   alive: boolean;
 }
+
+const DEFAULT_SKILLS: SkillRow[] = [
+  { name: 'Acrobazia', keyAbility: 'DES', keyAbilityShort: 'destrezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Addestrare Animali', keyAbility: 'CAR', keyAbilityShort: 'carisma', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Artigianato ()', keyAbility: 'INT', keyAbilityShort: 'intelligenza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Artigianato ()', keyAbility: 'INT', keyAbilityShort: 'intelligenza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Artigianato ()', keyAbility: 'INT', keyAbilityShort: 'intelligenza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Artista della Fuga', keyAbility: 'DES', keyAbilityShort: 'destrezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Ascoltare', keyAbility: 'SAG', keyAbilityShort: 'saggezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Camuffare', keyAbility: 'CAR', keyAbilityShort: 'carisma', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Cavalcare', keyAbility: 'DES', keyAbilityShort: 'destrezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Cercare', keyAbility: 'INT', keyAbilityShort: 'intelligenza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Concentrazione', keyAbility: 'COS', keyAbilityShort: 'costituzione', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Conoscenze ()', keyAbility: 'INT', keyAbilityShort: 'intelligenza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Conoscenze ()', keyAbility: 'INT', keyAbilityShort: 'intelligenza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Conoscenze ()', keyAbility: 'INT', keyAbilityShort: 'intelligenza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Conoscenze ()', keyAbility: 'INT', keyAbilityShort: 'intelligenza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Conoscenze ()', keyAbility: 'INT', keyAbilityShort: 'intelligenza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Decifrare Scritture', keyAbility: 'INT', keyAbilityShort: 'intelligenza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Diplomazia', keyAbility: 'CAR', keyAbilityShort: 'carisma', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Disattivare Congegni', keyAbility: 'INT', keyAbilityShort: 'intelligenza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Equilibrio', keyAbility: 'DES', keyAbilityShort: 'destrezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Falsificare', keyAbility: 'INT', keyAbilityShort: 'intelligenza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Guarire', keyAbility: 'SAG', keyAbilityShort: 'saggezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Intimidire', keyAbility: 'CAR', keyAbilityShort: 'carisma', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Intrattenere ()', keyAbility: 'CAR', keyAbilityShort: 'carisma', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Intrattenere ()', keyAbility: 'CAR', keyAbilityShort: 'carisma', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Intrattenere ()', keyAbility: 'CAR', keyAbilityShort: 'carisma', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Muoversi Silenziosamente', keyAbility: 'DES', keyAbilityShort: 'destrezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Nascondersi', keyAbility: 'DES', keyAbilityShort: 'destrezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Nuotare', keyAbility: 'FOR', keyAbilityShort: 'forza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Osservare', keyAbility: 'SAG', keyAbilityShort: 'saggezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Percepire Intenzioni', keyAbility: 'SAG', keyAbilityShort: 'saggezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Professione ()', keyAbility: 'SAG', keyAbilityShort: 'saggezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Professione ()', keyAbility: 'SAG', keyAbilityShort: 'saggezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Raccogliere Informazioni', keyAbility: 'CAR', keyAbilityShort: 'carisma', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Raggirare', keyAbility: 'CAR', keyAbilityShort: 'carisma', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Rapidità di Mano', keyAbility: 'DES', keyAbilityShort: 'destrezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Saltare', keyAbility: 'FOR', keyAbilityShort: 'forza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Sapienza Magica', keyAbility: 'INT', keyAbilityShort: 'intelligenza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Scalare', keyAbility: 'FOR', keyAbilityShort: 'forza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Scassinare Serrature', keyAbility: 'DES', keyAbilityShort: 'destrezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Sopravvivenza', keyAbility: 'SAG', keyAbilityShort: 'saggezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Utilizzare Cordicelle', keyAbility: 'DES', keyAbilityShort: 'destrezza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Utilizzare Oggetti Magici', keyAbility: 'CAR', keyAbilityShort: 'carisma', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 },
+  { name: 'Valutare', keyAbility: 'INT', keyAbilityShort: 'intelligenza', checked: false, checked2: false, ranks: 0, miscMod: 0, total: 0 }
+];
 
 @Component({
   selector: 'app-game-session',
@@ -27,6 +76,7 @@ export class GameSessionComponent implements OnInit {
   showTalents = false;
   showCharacter = false;
   showCharTooltip = false;
+  showSkills = false;
   bagItems: BagItem[] = [
     { name: 'Pozione di cura', quantity: 3 },
     { name: 'Torcia', quantity: 2 }
@@ -69,7 +119,7 @@ export class GameSessionComponent implements OnInit {
     { id: 'cleanse', name: 'Purificazione', description: 'Rimuove effetti negativi.', icon: '' },
     { id: 'summon', name: 'Evoca Famiglio', description: 'Evoca un piccolo aiutante.', icon: '' },
     { id: 'teleport', name: 'Teletrasporto', description: 'Ti sposti istantaneamente.', icon: '' },
-    // ...altre spell per test paginazione
+    // ...altre abilità per test paginazione
   ];
 
   // Talenti mock senza icone
@@ -89,6 +139,9 @@ export class GameSessionComponent implements OnInit {
 
   // Character modal state
   characterSheet: any = {};
+
+  // Skills modal state
+  skillsList: SkillRow[] = DEFAULT_SKILLS.map(s => ({ ...s }));
 
   constructor(
     private route: ActivatedRoute,
@@ -113,7 +166,7 @@ export class GameSessionComponent implements OnInit {
       gold: this.gold,
       silver: this.silver,
       copper: this.copper,
-      // Add more fields as needed
+      skillsList: this.skillsList
     };
     try {
       this.storage.save(this.campaignId, data);
@@ -133,6 +186,7 @@ export class GameSessionComponent implements OnInit {
         if (typeof data.gold === 'number') this.gold = data.gold;
         if (typeof data.silver === 'number') this.silver = data.silver;
         if (typeof data.copper === 'number') this.copper = data.copper;
+        if (Array.isArray(data.skillsList)) this.skillsList = data.skillsList;
       } else {
         // Nessun dato locale: lascia i valori di default
         // (non fare nulla)
@@ -260,6 +314,14 @@ export class GameSessionComponent implements OnInit {
   }
   closeCharacter() {
     this.showCharacter = false;
+    this.persistAll();
+  }
+
+  openSkills() {
+    this.showSkills = true;
+  }
+  closeSkills() {
+    this.showSkills = false;
     this.persistAll();
   }
 

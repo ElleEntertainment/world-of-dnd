@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { SkillRow } from './skills/skills-modal.component';
 
 export interface LocalGameSessionData {
   character: any;
@@ -7,7 +8,7 @@ export interface LocalGameSessionData {
   gold: number;
   silver: number;
   copper: number;
-  // Add more fields as needed
+  skillsList: SkillRow[]
 }
 
 @Injectable({ providedIn: 'root' })

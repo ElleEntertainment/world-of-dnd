@@ -1,0 +1,55 @@
+<div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+  <div class="bg-gray-900 rounded-2xl shadow-2xl border-4 border-yellow-900 w-full max-w-4xl max-h-[95vh] p-0 flex flex-col relative overflow-hidden">
+    <button (click)="close.emit()" class="absolute top-3 right-3 text-gray-300 hover:text-red-500 text-2xl font-bold z-20">&times;</button>
+    <h2 class="text-2xl font-bold text-yellow-300 mb-4 text-center pt-6">Abilità</h2>
+    <div class="flex-1 overflow-y-auto px-6 pb-6">
+      <table class="min-w-full text-sm text-yellow-100 gothic-scrollbar">
+        <thead>
+          <tr class="bg-gray-800 text-yellow-300">
+            <th class="px-2 py-1"></th>
+            <th class="px-2 py-1">Nome</th>
+            <th class="px-2 py-1"></th>
+            <th class="px-2 py-1">Car.</th>
+            <th class="px-2 py-1">Mod. Car.</th>
+            <th class="px-2 py-1">Gradi</th>
+            <th class="px-2 py-1">Mod. Vario</th>
+            <th class="px-2 py-1">Totale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let skill of skills" class="border-b border-yellow-900 hover:bg-gray-800 transition">
+            <td class="px-2 py-1 text-center">
+              <input type="checkbox" [(ngModel)]="skill.checked" (change)="onCheckChange(skill)" />
+            </td>
+            <td class="px-2 py-1 font-bold">
+              <span *ngIf="!isCustomName(skill)">{{ skill.name }}</span>
+              <span *ngIf="isCustomName(skill)">
+                {{ skill.name.split('(')[0] }}
+                <input [(ngModel)]="skill.customName" (input)="onCustomNameChange(skill, $event)" class="w-24 px-1 py-0.5 rounded bg-gray-800 text-yellow-100 border border-yellow-700 text-xs mx-1" placeholder="Specializzazione" />
+                )
+              </span>
+            </td>
+            <td class="px-2 py-1 text-center">
+              <input type="checkbox" [(ngModel)]="skill.checked2" (change)="onCheck2Change(skill)" />
+            </td>
+            <td class="px-2 py-1 text-center">
+              {{ skill.keyAbility }}
+            </td>
+            <td class="px-2 py-1 text-center">
+              {{ getAbilityModifier(skill) }}
+            </td>
+            <td class="px-2 py-1 text-center">
+              <input type="number" [(ngModel)]="skill.ranks" (input)="onRanksChange(skill, $event)" class="w-14 px-1 py-0.5 rounded bg-gray-800 text-yellow-100 border border-yellow-700 text-xs text-center" />
+            </td>
+            <td class="px-2 py-1 text-center">
+              <input type="number" [(ngModel)]="skill.miscMod" (input)="onMiscModChange(skill, $event)" class="w-14 px-1 py-0.5 rounded bg-gray-800 text-yellow-100 border border-yellow-700 text-xs text-center" />
+            </td>
+            <td class="px-2 py-1 text-center font-bold text-yellow-300">
+              {{ getAbilityModifier(skill) + (skill.ranks || 0) + (skill.miscMod || 0) }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RouterModule, Routes } from '@angular/router';
-
 import { GameSessionComponent } from './game-session.component';
 import { BagModalComponent } from './bag/bag-modal.component';
 import { CoinsModalComponent } from './bag/coins-modal.component';
 import { SpellsModalComponent } from './spells/spells-modal.component';
 import { TalentsModalComponent } from './talents/talents-modal.component';
 import { CharacterModalComponent } from './character/character-modal.component';
+import { SkillsModalComponent } from './skills/skills-modal.component';
+import { FormsModule } from '@angular/forms';
+import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   { path: ':id', component: GameSessionComponent },
@@ -22,7 +22,8 @@ const routes: Routes = [
     CoinsModalComponent,
     SpellsModalComponent,
     TalentsModalComponent,
-    CharacterModalComponent
+    CharacterModalComponent,
+    SkillsModalComponent
   ],
   imports: [
     CommonModule,
