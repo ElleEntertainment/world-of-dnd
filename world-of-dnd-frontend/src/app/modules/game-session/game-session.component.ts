@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BagItem } from './bag/bag-modal.component';
 import { Ability } from './abilities/abilities-modal.component';
 import { Talent } from './talents/talents-modal.component';
+import { GameSessionStorageService, LocalGameSessionData } from './game-session-storage.service';
 
 interface PlayerInfo {
   name: string;
@@ -85,13 +86,97 @@ export class GameSessionComponent implements OnInit {
 
   hoveredAbility: Ability | null = null;
 
-  constructor(private route: ActivatedRoute) {}
+  // Character modal state
+  characterSheet: any = {};
+
+  constructor(
+    private route: ActivatedRoute,
+    private storage: GameSessionStorageService
+  ) {}
 
   ngOnInit() {
     this.campaignId = this.route.snapshot.paramMap.get('id');
+    console.log('Inizializzazione GameSessionComponent, ID campagna:', this.campaignId);
+    this.loadLocalData();
     // In futuro: recupera la versione dal backend
     // this.dndVersion = ...;
   }
+
+  // --- LocalStorage logic ---
+
+  saveLocalData() {
+    if (!this.campaignId) return;
+    const data: LocalGameSessionData = {
+      character: this.characterSheet,
+      abilityBar: this.abilityBar,
+      bagItems: this.bagItems,
+      gold: this.gold,
+      silver: this.silver,
+      copper: this.copper,
+      // Add more fields as needed
+    };
+    try {
+      this.storage.save(this.campaignId, data);
+    } catch (e) {
+      console.error('Errore salvataggio localStorage:', e);
+    }
+  }
+
+  loadLocalData() {
+    if (!this.campaignId) return;
+    try {
+      const data = this.storage.load(this.campaignId);
+      if (data) {
+        if (data.character) this.characterSheet = data.character;
+        if (data.abilityBar) this.abilityBar = data.abilityBar;
+        if (data.bagItems) this.bagItems = data.bagItems;
+        if (typeof data.gold === 'number') this.gold = data.gold;
+        if (typeof data.silver === 'number') this.silver = data.silver;
+        if (typeof data.copper === 'number') this.copper = data.copper;
+      } else {
+        // Nessun dato locale: lascia i valori di default
+        // (non fare nulla)
+      }
+    } catch (e) {
+      console.error('Errore caricamento localStorage:', e);
+    }
+  }
+
+  clearLocalData() {
+    if (!this.campaignId) return;
+    try {
+      this.storage.remove(this.campaignId);
+    } catch (e) {
+      console.error('Errore rimozione localStorage:', e);
+    }
+  }
+
+  hasLocalData(): boolean {
+    if (!this.campaignId) return false;
+    try {
+      return this.storage.hasLocal(this.campaignId);
+    } catch (e) {
+      console.error('Errore verifica localStorage:', e);
+      return false;
+    }
+  }
+
+  // Call this after every relevant change
+  persistAll() {
+    this.saveLocalData();
+    this.stubSyncToServer();
+  }
+
+  // --- STUB: sync to server when online ---
+  stubSyncToServer() {
+    // Qui in futuro chiamerai le API per sincronizzare i dati
+    // Se la sync va a buon fine:
+    // this.clearLocalData();
+    // Per ora è uno stub
+    // console.log('Sync to server (stub)');
+  }
+
+  // --- UI logic ---
 
   openBag() {
     this.showBag = true;
@@ -99,10 +184,12 @@ export class GameSessionComponent implements OnInit {
 
   closeBag() {
     this.showBag = false;
+    this.persistAll();
   }
 
   updateBag(items: BagItem[]) {
     this.bagItems = [...items];
+    this.persistAll();
   }
 
   openCoins() {
@@ -111,12 +198,14 @@ export class GameSessionComponent implements OnInit {
 
   closeCoins() {
     this.showCoins = false;
+    this.persistAll();
   }
 
   updateCoins({ gold, silver, copper }: { gold: number; silver: number; copper: number }) {
     this.gold = gold;
     this.silver = silver;
     this.copper = copper;
+    this.persistAll();
   }
 
   setEditingHpCurrent(edit: boolean) {
@@ -131,6 +220,7 @@ export class GameSessionComponent implements OnInit {
       this.hpCurrent = val;
     }
     this.editingHpCurrent = false;
+    this.persistAll();
   }
   onHpMaxChange(event: any) {
     const val = parseInt(event.target.value, 10);
@@ -139,6 +229,7 @@ export class GameSessionComponent implements OnInit {
       if (this.hpCurrent > this.hpMax) this.hpCurrent = this.hpMax;
     }
     this.editingHpMax = false;
+    this.persistAll();
   }
 
   openSessionInfo() {
@@ -153,6 +244,7 @@ export class GameSessionComponent implements OnInit {
   }
   closeAbilities() {
     this.showAbilities = false;
+    this.persistAll();
   }
 
   openTalents() {
@@ -160,6 +252,7 @@ export class GameSessionComponent implements OnInit {
   }
   closeTalents() {
     this.showTalents = false;
+    this.persistAll();
   }
 
   openCharacter() {
@@ -167,10 +260,12 @@ export class GameSessionComponent implements OnInit {
   }
   closeCharacter() {
     this.showCharacter = false;
+    this.persistAll();
   }
 
   assignAbilityToBar({ ability, slot }: { ability: Ability, slot: number }) {
     this.abilityBar[slot] = ability;
+    this.persistAll();
   }
 
   // Drag & drop handlers for ability bar (from spellbook modal)
@@ -180,9 +275,16 @@ export class GameSessionComponent implements OnInit {
     const ability = this.allAbilities.find(a => a.id === abilityId);
     if (ability) {
       this.abilityBar[slot] = ability;
+      this.persistAll();
     }
   }
   allowDrop(event: any) {
     event.preventDefault();
+  }
+
+  // --- Listen to online/offline events to trigger sync ---
+  @HostListener('window:online')
+  onOnline() {
+    this.stubSyncToServer();
   }
 }

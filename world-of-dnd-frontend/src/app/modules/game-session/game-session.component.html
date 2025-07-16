@@ -134,6 +134,8 @@
   <!-- Character Modal -->
   <app-character-modal
     *ngIf="showCharacter"
+    [character]="characterSheet"
+    (characterChange)="characterSheet = $event; persistAll()"
     (close)="closeCharacter()">
   </app-character-modal>
 

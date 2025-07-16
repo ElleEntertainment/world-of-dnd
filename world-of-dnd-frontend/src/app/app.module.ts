@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    RouterModule.forRoot(appRoutes, {enableTracing:true}),
+    RouterModule.forRoot(appRoutes, {enableTracing:false}),
     LayoutModule
   ],
   providers: [],
