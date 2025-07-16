@@ -8,6 +8,7 @@ import { BagModalComponent } from './bag/bag-modal.component';
 import { CoinsModalComponent } from './bag/coins-modal.component';
 import { AbilitiesModalComponent } from './abilities/abilities-modal.component';
 import { TalentsModalComponent } from './talents/talents-modal.component';
+import { CharacterModalComponent } from './character/character-modal.component';
 
 const routes: Routes = [
   { path: ':id', component: GameSessionComponent },
@@ -20,7 +21,8 @@ const routes: Routes = [
     BagModalComponent,
     CoinsModalComponent,
     AbilitiesModalComponent,
-    TalentsModalComponent
+    TalentsModalComponent,
+    CharacterModalComponent
   ],
   imports: [
     CommonModule,

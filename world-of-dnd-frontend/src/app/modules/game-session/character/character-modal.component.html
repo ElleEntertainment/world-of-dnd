@@ -1,0 +1,318 @@
+<div class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 gothic-modal">
+  <div class="bg-gray-900 rounded-2xl shadow-2xl border-4 border-yellow-900 w-full max-w-4xl max-h-[95vh] p-0 flex flex-col relative overflow-hidden">
+    <button (click)="close.emit()" class="absolute top-3 right-3 text-gray-300 hover:text-red-500 text-2xl font-bold z-20">&times;</button>
+    <!-- Tabs -->
+    <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-yellow-900 scrollbar-track-gray-800">
+      <div class="flex flex-row justify-start gap-2 border-b-2 border-yellow-900 bg-gray-800 py-2 min-w-[700px] w-fit px-4">
+        <button class="px-4 py-1 rounded-t-lg font-bold transition-colors duration-200"
+          [ngClass]="tab === 'info' ? 'bg-yellow-900 text-yellow-200 shadow-lg' : 'bg-gray-700 text-yellow-200 hover:bg-yellow-800'"
+          (click)="setTab('info')">Info</button>
+        <button class="px-4 py-1 rounded-t-lg font-bold transition-colors duration-200"
+          [ngClass]="tab === 'combat' ? 'bg-yellow-900 text-yellow-200 shadow-lg' : 'bg-gray-700 text-yellow-200 hover:bg-yellow-800'"
+          (click)="setTab('combat')">Combattimento</button>
+        <button class="px-4 py-1 rounded-t-lg font-bold transition-colors duration-200"
+          [ngClass]="tab === 'stats' ? 'bg-yellow-900 text-yellow-200 shadow-lg' : 'bg-gray-700 text-yellow-200 hover:bg-yellow-800'"
+          (click)="setTab('stats')">Caratteristiche</button>
+        <button class="px-4 py-1 rounded-t-lg font-bold transition-colors duration-200"
+          [ngClass]="tab === 'saves' ? 'bg-yellow-900 text-yellow-200 shadow-lg' : 'bg-gray-700 text-yellow-200 hover:bg-yellow-800'"
+          (click)="setTab('saves')">Tiri Salvezza</button>
+        <button class="px-4 py-1 rounded-t-lg font-bold transition-colors duration-200"
+          [ngClass]="tab === 'attacks' ? 'bg-yellow-900 text-yellow-200 shadow-lg' : 'bg-gray-700 text-yellow-200 hover:bg-yellow-800'"
+          (click)="setTab('attacks')">Attacchi</button>
+        <button class="px-4 py-1 rounded-t-lg font-bold transition-colors duration-200"
+          [ngClass]="tab === 'armor' ? 'bg-yellow-900 text-yellow-200 shadow-lg' : 'bg-gray-700 text-yellow-200 hover:bg-yellow-800'"
+          (click)="setTab('armor')">Equipaggiamento Difensivo</button>
+        <button class="px-4 py-1 rounded-t-lg font-bold transition-colors duration-200"
+          [ngClass]="tab === 'equipment' ? 'bg-yellow-900 text-yellow-200 shadow-lg' : 'bg-gray-700 text-yellow-200 hover:bg-yellow-800'"
+          (click)="setTab('equipment')">Oggetti</button>
+        <button class="px-4 py-1 rounded-t-lg font-bold transition-colors duration-200"
+          [ngClass]="tab === 'languages' ? 'bg-yellow-900 text-yellow-200 shadow-lg' : 'bg-gray-700 text-yellow-200 hover:bg-yellow-800'"
+          (click)="setTab('languages')">Linguaggi</button>
+      </div>
+    </div>
+    <div class="flex-1 overflow-y-auto p-6 gothic-scrollbar">
+      <!-- Info Tab -->
+      <div *ngIf="tab === 'info'" class="space-y-4">
+        <div class="flex flex-wrap gap-4">
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Nome personaggio</label>
+            <input [(ngModel)]="characterName" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Nome giocatore</label>
+            <input [(ngModel)]="playerName" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+        </div>
+        <div>
+          <label class="font-bold text-yellow-200">Classi e livelli</label>
+          <div class="flex flex-col gap-2">
+            <div *ngFor="let cls of classes; let i = index" class="flex gap-2 items-center">
+              <input [(ngModel)]="cls.name" placeholder="Classe" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100 w-32" />
+              <input type="number" min="1" [(ngModel)]="cls.level" placeholder="Livello" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100 w-20" />
+              <button (click)="removeClass(i)" [disabled]="classes.length === 1" class="text-red-600 font-bold text-lg px-2">&times;</button>
+            </div>
+            <button (click)="addClass()" class="text-yellow-400 font-bold text-sm mt-1">+ Aggiungi classe</button>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-4">
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Razza</label>
+            <input [(ngModel)]="race" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Allineamento</label>
+            <input [(ngModel)]="alignment" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Divinità</label>
+            <input [(ngModel)]="deity" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Taglia</label>
+            <input [(ngModel)]="size" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-4">
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Età</label>
+            <input [(ngModel)]="age" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Sesso</label>
+            <input [(ngModel)]="gender" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Altezza</label>
+            <input [(ngModel)]="height" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Peso</label>
+            <input [(ngModel)]="weight" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-4">
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Occhi</label>
+            <input [(ngModel)]="eyes" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Capelli</label>
+            <input [(ngModel)]="hair" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Pelle</label>
+            <input [(ngModel)]="skin" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+        </div>
+      </div>
+      <!-- Combat Tab -->
+      <div *ngIf="tab === 'combat'" class="space-y-4">
+        <div class="flex flex-wrap gap-4">
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Velocità</label>
+            <input [(ngModel)]="speed" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Riduzione del danno</label>
+            <input [(ngModel)]="dr" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Classe Armatura</label>
+            <input [(ngModel)]="ca" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Contatto</label>
+            <input [(ngModel)]="caTouch" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Colto alla sprovvista</label>
+            <input [(ngModel)]="caFlat" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Iniziativa</label>
+            <input [(ngModel)]="initiative" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+        </div>
+      </div>
+      <!-- Stats Tab -->
+      <div *ngIf="tab === 'stats'" class="space-y-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div *ngFor="let stat of ['forza','destrezza','costituzione','intelligenza','saggezza','carisma']" class="flex flex-col border border-yellow-900 rounded-lg p-2 bg-gray-800">
+            <label class="font-bold text-yellow-200 capitalize">{{ stat }}</label>
+            <div class="flex gap-2 items-center">
+              <span class="text-xs text-yellow-200">Punteggio</span>
+              <input type="number" [(ngModel)]="stats[stat].score" class="rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100 w-16" />
+              <span class="text-xs text-yellow-200">Mod</span>
+              <input type="number" [(ngModel)]="stats[stat].modifier" class="rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100 w-12" />
+            </div>
+            <div class="flex gap-2 items-center mt-1">
+              <span class="text-xs text-yellow-200">Temp.</span>
+              <input type="number" [(ngModel)]="stats[stat].tempScore" class="rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100 w-16" />
+              <span class="text-xs text-yellow-200">Mod Temp.</span>
+              <input type="number" [(ngModel)]="stats[stat].tempModifier" class="rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100 w-12" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Saves Tab -->
+      <div *ngIf="tab === 'saves'" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div *ngFor="let save of ['tempra','riflessi','volonta']" class="flex flex-col border border-yellow-900 rounded-lg p-2 bg-gray-800">
+            <label class="font-bold text-yellow-200 capitalize">{{ save }}</label>
+            <div class="flex gap-2 items-center">
+              <span class="text-xs text-yellow-200">Base</span>
+              <input type="number" [(ngModel)]="saves[save].base" class="rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100 w-16" />
+              <span class="text-xs text-yellow-200">Mod. Temp.</span>
+              <input type="number" [(ngModel)]="saves[save].tempModifier" class="rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100 w-12" />
+            </div>
+            <div class="flex flex-col mt-1">
+              <label class="text-xs text-yellow-200">Modificatori di condizione</label>
+              <textarea [(ngModel)]="saves[save].conditionModifiers" class="rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-4 mt-4">
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Bonus Attacco Base</label>
+            <input [(ngModel)]="bab" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Resistenza Incantesimi</label>
+            <input [(ngModel)]="sr" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-bold text-yellow-200">Lotta</label>
+            <input [(ngModel)]="grapple" class="rounded border border-yellow-900 px-2 py-1 bg-gray-800 text-yellow-100" />
+          </div>
+        </div>
+      </div>
+      <!-- Attacks Tab -->
+      <div *ngIf="tab === 'attacks'" class="space-y-4">
+        <div class="flex flex-col gap-2">
+          <div class="flex gap-2 font-bold text-yellow-200">
+            <span class="w-24">Attacco</span>
+            <span class="w-16">Bonus</span>
+            <span class="w-20">Danni</span>
+            <span class="w-16">Critico</span>
+            <span class="w-16">Gittata</span>
+            <span class="w-16">Tipo</span>
+            <span class="w-16">Peso</span>
+            <span class="flex-1">Note</span>
+            <span class="w-8"></span>
+          </div>
+          <div *ngFor="let atk of attacks; let i = index" class="flex gap-2 items-center">
+            <input [(ngModel)]="atk.attack" class="w-24 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="atk.bonus" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="atk.damage" class="w-20 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="atk.crit" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="atk.range" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="atk.type" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="atk.weight" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="atk.notes" class="flex-1 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <button (click)="removeAttack(i)" class="text-red-600 font-bold text-lg px-2">&times;</button>
+          </div>
+          <button (click)="addAttack()" class="text-yellow-400 font-bold text-sm mt-1">+ Aggiungi attacco</button>
+        </div>
+      </div>
+      <!-- Armor Tab -->
+      <div *ngIf="tab === 'armor'" class="space-y-4">
+        <div class="font-bold text-yellow-200 mb-2">Armature / Oggetti protettivi</div>
+        <div class="flex flex-col gap-2">
+          <div class="flex gap-2 font-bold text-yellow-200">
+            <span class="w-32">Oggetto</span>
+            <span class="w-20">Tipo</span>
+            <span class="w-16">Bonus CA</span>
+            <span class="w-16">Des Max</span>
+            <span class="w-16">Penalità</span>
+            <span class="w-16">Fall. Inc.</span>
+            <span class="w-16">Velocità</span>
+            <span class="w-16">Peso</span>
+            <span class="flex-1">Proprietà</span>
+            <span class="w-8"></span>
+          </div>
+          <div *ngFor="let armor of armors; let i = index" class="flex gap-2 items-center">
+            <input [(ngModel)]="armor.item" class="w-32 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="armor.type" class="w-20 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="armor.caBonus" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="armor.maxDex" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="armor.checkPenalty" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="armor.spellFail" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="armor.speed" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="armor.weight" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="armor.special" class="flex-1 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <button (click)="removeArmor(i)" class="text-red-600 font-bold text-lg px-2">&times;</button>
+          </div>
+          <button (click)="addArmor()" class="text-yellow-400 font-bold text-sm mt-1">+ Aggiungi armatura/oggetto</button>
+        </div>
+        <div class="font-bold text-yellow-200 mt-6 mb-2">Scudi / Oggetti protettivi</div>
+        <div class="flex flex-col gap-2">
+          <div class="flex gap-2 font-bold text-yellow-200">
+            <span class="w-32">Oggetto</span>
+            <span class="w-16">Bonus CA</span>
+            <span class="w-16">Peso</span>
+            <span class="w-16">Penalità</span>
+            <span class="w-16">Fall. Inc.</span>
+            <span class="flex-1">Proprietà</span>
+            <span class="w-8"></span>
+          </div>
+          <div *ngFor="let shield of shields; let i = index" class="flex gap-2 items-center">
+            <input [(ngModel)]="shield.item" class="w-32 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="shield.caBonus" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="shield.weight" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="shield.checkPenalty" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="shield.spellFail" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="shield.special" class="flex-1 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <button (click)="removeShield(i)" class="text-red-600 font-bold text-lg px-2">&times;</button>
+          </div>
+          <button (click)="addShield()" class="text-yellow-400 font-bold text-sm mt-1">+ Aggiungi scudo/oggetto</button>
+        </div>
+        <div class="font-bold text-yellow-200 mt-6 mb-2">Altri oggetti protettivi</div>
+        <div class="flex flex-col gap-2">
+          <div class="flex gap-2 font-bold text-yellow-200">
+            <span class="w-32">Oggetto</span>
+            <span class="w-16">Bonus CA</span>
+            <span class="w-16">Peso</span>
+            <span class="flex-1">Proprietà</span>
+            <span class="w-8"></span>
+          </div>
+          <div *ngFor="let prot of protections; let i = index" class="flex gap-2 items-center">
+            <input [(ngModel)]="prot.item" class="w-32 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="prot.caBonus" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="prot.weight" class="w-16 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <input [(ngModel)]="prot.special" class="flex-1 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <button (click)="removeProtection(i)" class="text-red-600 font-bold text-lg px-2">&times;</button>
+          </div>
+          <button (click)="addProtection()" class="text-yellow-400 font-bold text-sm mt-1">+ Aggiungi oggetto protettivo</button>
+        </div>
+      </div>
+      <!-- Equipment Tab -->
+      <div *ngIf="tab === 'equipment'" class="space-y-4">
+        <div class="font-bold text-yellow-200 mb-2">Altri oggetti</div>
+        <div class="flex flex-col gap-2">
+          <div class="flex gap-2 font-bold text-yellow-200">
+            <span class="w-32">Nome</span>
+            <span class="flex-1">Nota</span>
+            <span class="w-8"></span>
+          </div>
+          <div *ngFor="let eq of equipments; let i = index" class="flex gap-2 items-center">
+            <input [(ngModel)]="eq.item" class="w-32 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" />
+            <textarea [(ngModel)]="eq.note" class="flex-1 rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100" rows="1"></textarea>
+            <button (click)="removeEquipment(i)" class="text-red-600 font-bold text-lg px-2">&times;</button>
+          </div>
+          <button (click)="addEquipment()" class="text-yellow-400 font-bold text-sm mt-1">+ Aggiungi oggetto</button>
+        </div>
+      </div>
+      <!-- Languages Tab -->
+      <div *ngIf="tab === 'languages'" class="space-y-4">
+        <div class="font-bold text-yellow-200 mb-2">Linguaggi</div>
+        <div class="flex flex-col gap-2">
+          <div *ngFor="let lang of languages; let i = index" class="flex gap-2 items-center">
+            <input [(ngModel)]="languages[i]" class="rounded border border-yellow-900 px-2 py-1 bg-gray-900 text-yellow-100 flex-1" [attr.autofocus]="i === languages.length - 1 ? true : null" />
+            <button (mousedown)="removeLanguage(i)" class="text-red-600 font-bold text-lg px-2">&times;</button>
+          </div>
+          <button (mousedown)="addLanguage()" class="text-yellow-400 font-bold text-sm mt-1">+ Aggiungi linguaggio</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -24,6 +24,7 @@ export class GameSessionComponent implements OnInit {
   showSessionInfo = false;
   showAbilities = false;
   showTalents = false;
+  showCharacter = false;
   bagItems: BagItem[] = [
     { name: 'Pozione di cura', quantity: 3 },
     { name: 'Torcia', quantity: 2 }
@@ -159,6 +160,13 @@ export class GameSessionComponent implements OnInit {
   }
   closeTalents() {
     this.showTalents = false;
+  }
+
+  openCharacter() {
+    this.showCharacter = true;
+  }
+  closeCharacter() {
+    this.showCharacter = false;
   }
 
   assignAbilityToBar({ ability, slot }: { ability: Ability, slot: number }) {
