@@ -26,6 +26,7 @@ export class GameSessionComponent implements OnInit {
   showAbilities = false;
   showTalents = false;
   showCharacter = false;
+  showCharTooltip = false;
   bagItems: BagItem[] = [
     { name: 'Pozione di cura', quantity: 3 },
     { name: 'Torcia', quantity: 2 }
@@ -96,7 +97,6 @@ export class GameSessionComponent implements OnInit {
 
   ngOnInit() {
     this.campaignId = this.route.snapshot.paramMap.get('id');
-    console.log('Inizializzazione GameSessionComponent, ID campagna:', this.campaignId);
     this.loadLocalData();
     // In futuro: recupera la versione dal backend
     // this.dndVersion = ...;

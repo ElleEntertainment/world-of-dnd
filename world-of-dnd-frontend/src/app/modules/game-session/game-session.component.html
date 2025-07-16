@@ -1,6 +1,8 @@
 <div class="min-h-screen w-full relative overflow-hidden" [ngStyle]="{'background': 'url(' + backgroundUrl + ') center center / cover no-repeat fixed'}">
   <!-- Top left: Character portrait and HP bar -->
-  <div class="absolute top-6 left-6 flex items-center z-20">
+  <div class="absolute top-6 left-6 flex items-center z-20 group"
+       (mouseenter)="showCharTooltip = true"
+       (mouseleave)="showCharTooltip = false">
     <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-yellow-700 shadow-lg bg-gray-900 flex items-center justify-center">
       <!-- Placeholder character face -->
       <img src="assets/img/character_face.png" alt="Character" class="w-full h-full object-cover" />
@@ -19,8 +21,69 @@
       </div>
       <div class="text-xs text-gray-400 mt-1">D&D {{ dndVersion }}</div>
     </div>
+    <!-- Tooltip centro schermo -->
+    <div *ngIf="showCharTooltip"
+         class="fixed left-1/2 top-1/2 z-[99999] -translate-x-1/2 -translate-y-1/2 bg-gray-900 border-4 border-yellow-900 rounded-2xl shadow-2xl px-10 py-8 text-yellow-100 w-[440px] max-w-full pointer-events-none select-none gothic-tooltip"
+         style="min-width:340px;">
+      <div class="text-xl font-bold text-yellow-300 mb-3 text-center">Statistiche Personaggio</div>
+      <div class="grid grid-cols-2 gap-x-6 gap-y-2 mb-3">
+        <ng-container *ngFor="let stat of ['forza','destrezza','costituzione','intelligenza','saggezza','carisma']">
+          <ng-container *ngIf="characterSheet?.stats?.[stat]">
+            <div class="flex flex-col">
+              <span class="font-bold capitalize">{{ stat }}</span>
+              <span>
+                Punteggio: <span class="font-mono">{{ characterSheet.stats[stat].score }}</span>
+              </span>
+              <span>
+                Mod: <span class="font-mono">{{ characterSheet.stats[stat].modifier }}</span>
+              </span>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+      <div class="border-t border-yellow-800 my-2"></div>
+      <div class="grid grid-cols-2 gap-x-6 gap-y-2 mb-3">
+        <ng-container *ngIf="characterSheet?.ca"><div><span class="font-bold">CA:</span> <span class="font-mono">{{ characterSheet.ca }}</span></div></ng-container>
+        <ng-container *ngIf="characterSheet?.caTouch"><div><span class="font-bold">Contatto:</span> <span class="font-mono">{{ characterSheet.caTouch }}</span></div></ng-container>
+        <ng-container *ngIf="characterSheet?.caFlat"><div><span class="font-bold">Colto alla sprovvista:</span> <span class="font-mono">{{ characterSheet.caFlat }}</span></div></ng-container>
+        <ng-container *ngIf="characterSheet?.initiative"><div><span class="font-bold">Iniziativa:</span> <span class="font-mono">{{ characterSheet.initiative }}</span></div></ng-container>
+      </div>
+      <div class="border-t border-yellow-800 my-2"></div>
+      <div class="grid grid-cols-1 gap-y-2 mb-2">
+        <ng-container *ngIf="characterSheet?.saves?.tempra">
+          <div>
+            <span class="font-bold">Tempra:</span>
+            <span *ngIf="characterSheet?.saves?.tempra?.base !== undefined">Base: <span class="font-mono">{{ characterSheet.saves.tempra.base }}</span></span>
+            <span *ngIf="characterSheet?.saves?.tempra?.tempModifier !== undefined"> Mod. Temp: <span class="font-mono">{{ characterSheet.saves.tempra.tempModifier }}</span></span>
+            <span *ngIf="characterSheet?.saves?.tempra?.conditionModifiers?.length">
+              <br /><span class="text-xs text-yellow-400">Condizioni: {{ characterSheet.saves.tempra.conditionModifiers.join(', ') }}</span>
+            </span>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="characterSheet?.saves?.riflessi">
+          <div>
+            <span class="font-bold">Riflessi:</span>
+            <span *ngIf="characterSheet?.saves?.riflessi?.base !== undefined">Base: <span class="font-mono">{{ characterSheet.saves.riflessi.base }}</span></span>
+            <span *ngIf="characterSheet?.saves?.riflessi?.tempModifier !== undefined"> Mod. Temp: <span class="font-mono">{{ characterSheet.saves.riflessi.tempModifier }}</span></span>
+            <span *ngIf="characterSheet?.saves?.riflessi?.conditionModifiers?.length">
+              <br /><span class="text-xs text-yellow-400">Condizioni: {{ characterSheet.saves.riflessi.conditionModifiers.join(', ') }}</span>
+            </span>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="characterSheet?.saves?.volonta">
+          <div>
+            <span class="font-bold">Volontà:</span>
+            <span *ngIf="characterSheet?.saves?.volonta?.base !== undefined">Base: <span class="font-mono">{{ characterSheet.saves.volonta.base }}</span></span>
+            <span *ngIf="characterSheet?.saves?.volonta?.tempModifier !== undefined"> Mod. Temp: <span class="font-mono">{{ characterSheet.saves.volonta.tempModifier }}</span></span>
+            <span *ngIf="characterSheet?.saves?.volonta?.conditionModifiers?.length">
+              <br /><span class="text-xs text-yellow-400">Condizioni: {{ characterSheet.saves.volonta.conditionModifiers.join(', ') }}</span>
+            </span>
+          </div>
+        </ng-container>
+      </div>
+    </div>
   </div>
-
+  <!-- ...resto del file invariato... -->
   <!-- Top right: Minimap -->
   <div class="absolute top-6 right-6 z-20">
     <div class="w-32 h-32 rounded-full border-4 border-yellow-700 shadow-lg bg-black flex items-center justify-center relative overflow-hidden">
@@ -28,7 +91,6 @@
       <span class="text-gray-400 text-xs">Minimappa</span>
     </div>
   </div>
-
   <!-- Bottom center: Ability bar -->
   <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-2 bg-black/40 px-6 py-4 rounded-2xl shadow-2xl border border-yellow-700">
     <ng-container *ngFor="let slot of abilityBar; let i = index">
@@ -68,7 +130,6 @@
       </div>
     </ng-container>
   </div>
-
   <!-- Bottom right: WoW-style menu (rectangular buttons) -->
   <div class="absolute bottom-8 right-8 z-30 flex flex-col items-end gap-2">
     <div class="flex flex-row gap-2 flex-wrap justify-end max-w-xs">
@@ -92,7 +153,6 @@
       </button>
     </div>
   </div>
-
   <!-- Bag Modal -->
   <app-bag-modal
     *ngIf="showBag"
@@ -104,7 +164,6 @@
     (update)="updateBag($event)"
     (openCoins)="openCoins()">
   </app-bag-modal>
-
   <!-- Coins Modal -->
   <app-coins-modal
     *ngIf="showCoins"
@@ -114,7 +173,6 @@
     (close)="closeCoins()"
     (update)="updateCoins($event)">
   </app-coins-modal>
-
   <!-- Abilities Modal -->
   <app-abilities-modal
     *ngIf="showAbilities"
@@ -123,14 +181,12 @@
     (close)="closeAbilities()"
     (assignAbility)="assignAbilityToBar($event)">
   </app-abilities-modal>
-
   <!-- Talents Modal -->
   <app-talents-modal
     *ngIf="showTalents"
     [talents]="allTalents"
     (close)="closeTalents()">
   </app-talents-modal>
-
   <!-- Character Modal -->
   <app-character-modal
     *ngIf="showCharacter"
@@ -138,7 +194,6 @@
     (characterChange)="characterSheet = $event; persistAll()"
     (close)="closeCharacter()">
   </app-character-modal>
-
   <!-- Session Info Modal -->
   <div *ngIf="showSessionInfo" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
     <div class="bg-gray-900 rounded-2xl shadow-2xl border-4 border-yellow-700 max-w-lg w-full p-6 flex flex-col relative">
