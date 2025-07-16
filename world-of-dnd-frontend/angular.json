@@ -26,7 +26,11 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-                "node_modules/rpg-awesome/fonts",
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/rpg-awesome/fonts",
+                  "output": "assets/fonts/rpg-awesome"
+                },
                 {
                     "glob": "**/*",
                     "input": "public",
