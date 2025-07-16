@@ -8,7 +8,8 @@ export interface LocalGameSessionData {
   gold: number;
   silver: number;
   copper: number;
-  skillsList: SkillRow[]
+  skillsList: SkillRow[];
+  annotazioni?: string;
 }
 
 @Injectable({ providedIn: 'root' })
