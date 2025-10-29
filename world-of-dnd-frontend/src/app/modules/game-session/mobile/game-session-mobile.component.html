@@ -1,0 +1,169 @@
+<!-- UI mobile compatta, una sezione visibile alla volta, background come desktop -->
+<div class="relative min-h-screen flex flex-col justify-between bg-cover bg-center" style="background-image: url('/img/bg/volcano_bg.jpg');">
+  <!-- Overlay per leggibilità -->
+  <div class="absolute inset-0 bg-black bg-opacity-60 z-0"></div>
+  <!-- Header -->
+  <div class="relative z-10 p-4 flex flex-col items-center text-white">
+    <div class="text-lg font-bold mb-2">Sessione {{ campaignId }}</div>
+    <div class="flex items-center gap-2 mb-2">
+      <span class="font-semibold">HP:</span>
+      <input type="number" min="0" [max]="hpMax" [(ngModel)]="hpCurrent" (change)="persistAll()" class="w-14 text-center bg-red-700 rounded px-2 py-1 font-mono text-white" />
+      <span>/</span>
+      <input type="number" min="1" [(ngModel)]="hpMax" (change)="persistAll()" class="w-14 text-center bg-red-700 rounded px-2 py-1 font-mono text-white" />
+    </div>
+    <div class="flex gap-3" *ngIf="showSection === 'coins'">
+      <span class="bg-yellow-700 rounded px-2 py-1 flex items-center">
+        Oro:
+        <input type="number" min="0" [(ngModel)]="gold" (change)="persistAll()" class="w-12 ml-1 bg-yellow-900 rounded text-white text-center" />
+      </span>
+      <span class="bg-gray-400 rounded px-2 py-1 flex items-center">
+        Arg:
+        <input type="number" min="0" [(ngModel)]="silver" (change)="persistAll()" class="w-12 ml-1 bg-gray-700 rounded text-white text-center" />
+      </span>
+      <span class="bg-orange-800 rounded px-2 py-1 flex items-center">
+        Ram:
+        <input type="number" min="0" [(ngModel)]="copper" (change)="persistAll()" class="w-12 ml-1 bg-orange-900 rounded text-white text-center" />
+      </span>
+    </div>
+  </div>
+
+  <!-- Sezioni -->
+  <div class="relative z-10 flex-1 overflow-y-auto px-2 pb-24">
+    <!-- Scheda con tab -->
+    <div *ngIf="showSection === 'character'" class="bg-black bg-opacity-40 rounded p-3 text-white">
+      <div class="flex mb-3 border-b border-gray-700">
+        <button (click)="characterTab = 'dati'" [class.text-yellow-400]="characterTab === 'dati'" class="flex-1 px-2 py-1 text-xs">Dati</button>
+        <button (click)="characterTab = 'caratteristiche'" [class.text-yellow-400]="characterTab === 'caratteristiche'" class="flex-1 px-2 py-1 text-xs">Caratteristiche</button>
+        <button (click)="characterTab = 'note'" [class.text-yellow-400]="characterTab === 'note'" class="flex-1 px-2 py-1 text-xs">Note</button>
+      </div>
+      <div *ngIf="characterTab === 'dati'">
+        <div *ngIf="characterSheet?.name" class="mb-1">
+          <span class="font-bold">Nome:</span>
+          <input [(ngModel)]="characterSheet.name" (change)="persistAll()" class="bg-gray-800 rounded px-2 py-1 ml-1 text-white" />
+        </div>
+        <div *ngIf="characterSheet?.class" class="mb-1">
+          <span class="font-bold">Classe:</span>
+          <input [(ngModel)]="characterSheet.class" (change)="persistAll()" class="bg-gray-800 rounded px-2 py-1 ml-1 text-white" />
+        </div>
+        <div *ngIf="characterSheet?.race" class="mb-1">
+          <span class="font-bold">Razza:</span>
+          <input [(ngModel)]="characterSheet.race" (change)="persistAll()" class="bg-gray-800 rounded px-2 py-1 ml-1 text-white" />
+        </div>
+        <div *ngIf="characterSheet?.level">
+          <span class="font-bold">Livello:</span>
+          <input type="number" min="1" [(ngModel)]="characterSheet.level" (change)="persistAll()" class="bg-gray-800 rounded px-2 py-1 ml-1 text-white w-14 text-center" />
+        </div>
+        <div *ngIf="!characterSheet?.name">
+          <span class="italic text-gray-300">Nessun personaggio caricato</span>
+        </div>
+      </div>
+      <div *ngIf="characterTab === 'caratteristiche'">
+        <div *ngFor="let stat of ['forza','destrezza','costituzione','intelligenza','saggezza','carisma']" class="mb-1">
+          <span class="font-bold capitalize">{{ stat }}:</span>
+          <input type="number" [(ngModel)]="characterSheet[stat]" (change)="persistAll()" class="bg-gray-800 rounded px-2 py-1 ml-1 text-white w-14 text-center" />
+        </div>
+      </div>
+      <div *ngIf="characterTab === 'note'">
+        <textarea [(ngModel)]="characterSheet.note" (change)="persistAll()" rows="4" class="w-full bg-gray-800 rounded px-2 py-1 text-white"></textarea>
+      </div>
+    </div>
+    <!-- Inventario con aggiunta/rimozione -->
+    <div *ngIf="showSection === 'bag'" class="bg-black bg-opacity-40 rounded p-3 text-white">
+      <h3 class="text-base font-semibold mb-2 flex items-center">
+        Inventario
+        <button (click)="addBagItem()" class="ml-2 px-2 py-1 bg-green-700 rounded text-xs">+</button>
+      </h3>
+      <ul class="space-y-1">
+        <li *ngFor="let item of bagItems; let i = index" class="flex justify-between items-center">
+          <input [(ngModel)]="bagItems[i].name" (change)="persistAll()" class="bg-gray-800 rounded px-2 py-1 text-white w-1/2" />
+          <input type="number" min="0" [(ngModel)]="bagItems[i].quantity" (change)="persistAll()" class="w-14 text-center bg-gray-700 rounded text-white ml-2" />
+          <button (click)="removeBagItem(i)" class="ml-2 px-2 py-1 bg-red-700 rounded text-xs">-</button>
+        </li>
+      </ul>
+      <div *ngIf="bagItems.length === 0" class="italic text-gray-300">Nessun oggetto</div>
+    </div>
+    <!-- Monete con aggiunta/rimozione -->
+    <div *ngIf="showSection === 'coins'" class="bg-black bg-opacity-40 rounded p-3 text-white">
+      <h3 class="text-base font-semibold mb-2">Monete</h3>
+      <div class="flex gap-3">
+        <span class="bg-yellow-700 rounded px-2 py-1 flex items-center">
+          Oro:
+          <input type="number" min="0" [(ngModel)]="gold" (change)="persistAll()" class="w-12 ml-1 bg-yellow-900 rounded text-white text-center" />
+        </span>
+        <span class="bg-gray-400 rounded px-2 py-1 flex items-center">
+          Arg:
+          <input type="number" min="0" [(ngModel)]="silver" (change)="persistAll()" class="w-12 ml-1 bg-gray-700 rounded text-white text-center" />
+        </span>
+        <span class="bg-orange-800 rounded px-2 py-1 flex items-center">
+          Ram:
+          <input type="number" min="0" [(ngModel)]="copper" (change)="persistAll()" class="w-12 ml-1 bg-orange-900 rounded text-white text-center" />
+        </span>
+      </div>
+    </div>
+    <!-- Magie -->
+    <div *ngIf="showSection === 'spells'" class="bg-black bg-opacity-40 rounded p-3 text-white">
+      <h3 class="text-base font-semibold mb-2">Magie assegnate</h3>
+      <ul class="flex flex-wrap gap-2 mb-2">
+        <li *ngFor="let spell of spellBar; let i = index" class="bg-gray-700 rounded px-2 py-1 text-xs min-w-[80px] text-center">
+          <select [(ngModel)]="spellBar[i]" (change)="persistAll()" class="bg-gray-800 text-white rounded w-full">
+            <option [ngValue]="null">Slot vuoto</option>
+            <option *ngFor="let spellOpt of allSpells" [ngValue]="spellOpt">{{ spellOpt.name }}</option>
+          </select>
+        </li>
+      </ul>
+      <h3 class="text-base font-semibold mb-2">Tutte le magie</h3>
+      <ul class="space-y-1">
+        <li *ngFor="let spell of allSpells">
+          <span class="font-bold">{{ spell.name }}</span>: <span class="text-xs">{{ spell.description }}</span>
+        </li>
+      </ul>
+    </div>
+    <!-- Talenti -->
+    <div *ngIf="showSection === 'talents'" class="bg-black bg-opacity-40 rounded p-3 text-white">
+      <h3 class="text-base font-semibold mb-2">Talenti</h3>
+      <ul class="space-y-1">
+        <li *ngFor="let talent of allTalents">
+          <span class="font-bold">{{ talent.name }}</span>: <span class="text-xs">{{ talent.description }}</span>
+        </li>
+      </ul>
+    </div>
+    <!-- Abilità: tabella scrollabile -->
+    <div *ngIf="showSection === 'skills'" class="bg-black bg-opacity-40 rounded p-3 text-white overflow-x-auto">
+      <h3 class="text-base font-semibold mb-2">Abilità</h3>
+      <table class="min-w-max w-full text-xs whitespace-nowrap">
+        <thead>
+          <tr>
+            <th class="px-2 py-1">Nome</th>
+            <th class="px-2 py-1">Chiave</th>
+            <th class="px-2 py-1">Gradi</th>
+            <th class="px-2 py-1">Mod</th>
+            <th class="px-2 py-1">Totale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let skill of skillsList">
+            <td class="px-2 py-1">{{ skill.name }}</td>
+            <td class="px-2 py-1">{{ skill.keyAbilityShort }}</td>
+            <td class="px-2 py-1">
+              <input type="number" min="0" [(ngModel)]="skill.ranks" (change)="persistAll()" class="w-12 text-center bg-gray-700 rounded text-white" />
+            </td>
+            <td class="px-2 py-1">
+              <input type="number" [(ngModel)]="skill.miscMod" (change)="persistAll()" class="w-12 text-center bg-gray-700 rounded text-white" />
+            </td>
+            <td class="px-2 py-1">{{ skill.total }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Barra di navigazione fissa in basso -->
+  <nav class="fixed bottom-0 left-0 right-0 z-20 bg-black bg-opacity-80 flex justify-around py-2 border-t border-gray-700">
+    <button (click)="showSection = 'character'" [class.text-yellow-400]="showSection === 'character'" class="flex-1 px-1 text-xs text-white">Scheda</button>
+    <button (click)="showSection = 'bag'" [class.text-yellow-400]="showSection === 'bag'" class="flex-1 px-1 text-xs text-white">Inventario</button>
+    <button (click)="showSection = 'coins'" [class.text-yellow-400]="showSection === 'coins'" class="flex-1 px-1 text-xs text-white">Monete</button>
+    <button (click)="showSection = 'spells'" [class.text-yellow-400]="showSection === 'spells'" class="flex-1 px-1 text-xs text-white">Magie</button>
+    <button (click)="showSection = 'talents'" [class.text-yellow-400]="showSection === 'talents'" class="flex-1 px-1 text-xs text-white">Talenti</button>
+    <button (click)="showSection = 'skills'" [class.text-yellow-400]="showSection === 'skills'" class="flex-1 px-1 text-xs text-white">Abilità</button>
+  </nav>
+</div>

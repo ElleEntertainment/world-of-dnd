@@ -1,0 +1,33 @@
+<div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+  <div class="bg-gray-900 rounded-2xl shadow-2xl border-4 border-yellow-700 max-w-md w-full p-6 flex flex-col relative">
+    <button (click)="close.emit()" class="absolute top-3 right-3 text-gray-300 hover:text-red-500 text-2xl font-bold">&times;</button>
+    <h2 class="text-2xl font-bold text-yellow-400 mb-4 text-center">Gestisci Monete</h2>
+    <div class="flex flex-col gap-4 mb-4">
+      <div class="flex items-center gap-2 justify-end">
+        <span class="inline-block w-4 h-4 rounded-full bg-yellow-400 border border-yellow-600"></span>
+        <span class="text-yellow-300 font-bold text-lg">{{ gold }}</span>
+        <span class="text-gray-300 text-sm">Oro</span>
+      </div>
+      <div class="flex items-center gap-2 justify-end">
+        <span class="inline-block w-4 h-4 rounded-full bg-gray-300 border border-gray-400"></span>
+        <span class="text-gray-300 font-bold text-lg">{{ silver }}</span>
+        <span class="text-gray-300 text-sm">Argento</span>
+      </div>
+      <div class="flex items-center gap-2 justify-end">
+        <span class="inline-block w-4 h-4 rounded-full bg-orange-700 border border-orange-900"></span>
+        <span class="text-orange-400 font-bold text-lg">{{ copper }}</span>
+        <span class="text-gray-300 text-sm">Rame</span>
+      </div>
+    </div>
+    <div class="border-t border-yellow-700 pt-4 mt-2">
+      <div class="flex flex-col gap-2">
+        <div class="flex items-end gap-2">
+          <input [(ngModel)]="addGold" type="number" min="0" class="w-20 px-3 py-2 rounded-lg bg-gray-800 text-yellow-300 border border-yellow-700 focus:border-yellow-400 outline-none" placeholder="+ oro" />
+          <input [(ngModel)]="addSilver" type="number" min="0" class="w-20 px-3 py-2 rounded-lg bg-gray-800 text-gray-300 border border-gray-400 focus:border-yellow-400 outline-none" placeholder="+ argento" />
+          <input [(ngModel)]="addCopper" type="number" min="0" class="w-20 px-3 py-2 rounded-lg bg-gray-800 text-orange-400 border border-orange-900 focus:border-yellow-400 outline-none" placeholder="+ rame" />
+        </div>
+        <button (click)="confirm()" class="mt-4 px-4 py-2 rounded-lg bg-green-600 text-white font-bold hover:bg-green-500 transition">Conferma</button>
+      </div>
+    </div>
+  </div>
+</div>

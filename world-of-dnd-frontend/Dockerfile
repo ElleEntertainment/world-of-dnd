@@ -1,5 +1,5 @@
 # Fase 1: Build dell'app Angular
-FROM node:20.11.1-bullseye-slim AS build-stage
+FROM node:24.9.0-bullseye-slim AS build-stage
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build -- --configuration production
 
 # Fase 2: Configurazione di Nginx per servire l'app
-FROM bitnami/nginx:1.25.1
+FROM nginx:1.25.1
 
 WORKDIR /world-of-dnd-frontend
 
