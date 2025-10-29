@@ -86,7 +86,8 @@
   <!-- ...resto del file invariato... -->
   <!-- Top right: Minimap -->
   <div class="absolute top-6 right-6 z-20">
-    <div class="w-32 h-32 rounded-full border-4 border-yellow-700 shadow-lg bg-black flex items-center justify-center relative overflow-hidden">
+    <div class="w-32 h-32 rounded-full border-4 border-yellow-700 shadow-lg bg-black flex items-center justify-center relative overflow-hidden cursor-pointer"
+         (click)="openEberronMap()">
       <!-- Minimap placeholder -->
       <span class="text-gray-400 text-xs">Minimappa</span>
     </div>
@@ -215,6 +216,11 @@
     (characterChange)="characterSheet = $event; persistAll()"
     (close)="closeCharacter()">
   </app-character-modal>
+  <!-- Eberron Map Dialog -->
+    <app-eberron-map-dialog
+        *ngIf="showEberronMap"
+        (close)="closeEberronMap()">
+    </app-eberron-map-dialog>
   <!-- Session Info Modal -->
   <div *ngIf="showSessionInfo" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
     <div class="bg-gray-900 rounded-2xl shadow-2xl border-4 border-yellow-700 max-w-lg w-full p-6 flex flex-col relative">
