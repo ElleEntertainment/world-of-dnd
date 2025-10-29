@@ -3,7 +3,7 @@ const minZoom = 1;
 const maxZoom = 7;
 const tileSize = 256;
 
-var fullmap = L.tileLayer('eberron/{z}/{x}/{y}.jpg', {
+var fullmap = L.tileLayer('/minimap/eberron/{z}/{x}/{y}.jpg', {
   minZoom, maxZoom, tileSize,
   updateWhenZooming: false,
   updateWhenIdle: true,

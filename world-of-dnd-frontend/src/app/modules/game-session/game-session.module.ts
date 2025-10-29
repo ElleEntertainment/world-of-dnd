@@ -11,7 +11,7 @@ import { SkillsModalComponent } from './skills/skills-modal.component';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { AnnotazioniModalComponent } from './annotazioni-modal/annotazioni-modal.component';
-import { EberronMapDialogComponent } from './eberron-map-dialog.component';
+import { EberronMapDialogComponent } from './eberron-map/eberron-map-dialog.component';
 
 const routes: Routes = [
   { path: ':id', component: GameSessionComponent },
