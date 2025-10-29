@@ -76,6 +76,7 @@ export class GameSessionComponent implements OnInit {
   showTalents = false;
   showCharacter = false;
   showCharTooltip = false;
+  showEberronMap = false;
   showSkills = false;
   bagItems: BagItem[] = [
     { name: 'Pozione di cura', quantity: 3 },
@@ -291,6 +292,13 @@ export class GameSessionComponent implements OnInit {
   }
   closeSessionInfo() {
     this.showSessionInfo = false;
+  }
+
+  openEberronMap() {
+    this.showEberronMap = true;
+  }
+  closeEberronMap() {
+    this.showEberronMap = false;
   }
 
   openSpells() {
