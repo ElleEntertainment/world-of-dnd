@@ -55,3 +55,10 @@ At the moment of the first start, the database will be empty (no spells, no auth
 3. Add a way to store the current progress (character info, saved spells on spellbar etc...) (at the moment stored locally in the browser)
 5. Add a way to share the character with the DM
 6. To be continued...
+
+## Screenshots
+
+![Landing Page](screenshots/landing_page.png)
+![Register Page](screenshots/register_page.png)
+![Login Page](screenshots/login_page.png)
+[![Watch the video](screenshots/landing_page.png)](https://youtu.be/c4WA-ZxJJSA)
