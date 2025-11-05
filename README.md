@@ -61,4 +61,4 @@ At the moment of the first start, the database will be empty (no spells, no auth
 ![Landing Page](screenshots/landing_page.png)
 ![Register Page](screenshots/register_page.png)
 ![Login Page](screenshots/login_page.png)
-<video src="https://youtu.be/c4WA-ZxJJSA" />
+<video src="https://youtu.be/c4WA-ZxJJSA" width="300" />
