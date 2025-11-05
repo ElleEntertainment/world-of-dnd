@@ -6,6 +6,16 @@ The main goal is to reproduce World of Warcraft UI for DnD players to use during
 
 ## How to develop locally
 
+### GIT
+
+Use GIT FLOW to manage the branches.
+- `master` branch is the production ready code
+- `develop` branch is the integration branch for features
+- Create feature branches from `develop` named `feature/your-feature-name`
+- When the feature is complete, create a Pull Request to `develop` branch
+- Once a milestone is complete, create a Release branch from `develop`, test it and then create a Pull Request to `master` branch. Don't forget to tag the release.
+- Hotfix branches can be created from `master` branch named `hotfix/your-hotfix-name` and then create a Pull Request to `master` and `develop` branches.
+
 ### Frontend
 
 ```
