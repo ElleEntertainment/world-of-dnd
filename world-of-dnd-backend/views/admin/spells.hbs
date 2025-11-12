@@ -1,0 +1,90 @@
+{{!< ../layout}}
+<div>
+  <h2 class="text-2xl font-semibold mb-4 content-heading">Gestione Spells</h2>
+
+    <div class="mb-6">
+    <form id="createSpellForm" class="grid grid-cols-2 gap-3 form-card text-slate-100">
+      <input id="s_name" placeholder="Name" class="border border-slate-700 bg-transparent rounded px-2 py-1 text-slate-100" required />
+      <input id="s_level" placeholder="Level" type="number" class="border border-slate-700 bg-transparent rounded px-2 py-1 text-slate-100" />
+      <textarea id="s_description" placeholder="Description" class="col-span-2 border border-slate-700 bg-transparent rounded px-2 py-1 text-slate-100"></textarea>
+      <div class="col-span-2 flex justify-end">
+        <button type="submit" class="px-3 py-1 bg-[color:var(--accent)] text-slate-900 rounded">Create</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="list" class="space-y-3"></div>
+</div>
+
+<script>
+  const apiBase = '/admin/api';
+
+  // Prefer cookie-based auth (HttpOnly cookie set by /admin/set-token).
+  // When running client-side JS include credentials:'include' so cookies are sent.
+  // Keep fallback to Authorization header from localStorage for non-HttpOnly flows.
+  const authHeader = () => {
+    const t = localStorage.getItem('access_token');
+    return t ? { 'Authorization': 'Bearer ' + t } : {};
+  };
+
+  async function fetchSpells() {
+    const res = await fetch(apiBase + '/spells', { credentials: 'include', headers: { ...authHeader() } });
+    if (!res.ok) return document.getElementById('list').innerText = 'Errore caricamento';
+    const data = await res.json();
+    renderList(data);
+  }
+
+  function renderList(spells) {
+    const container = document.getElementById('list');
+    container.innerHTML = '';
+      for (const s of spells) {
+      const el = document.createElement('div');
+      el.className = 'card p-3 rounded flex items-start justify-between';
+      el.innerHTML = `
+        <div class="w-full">
+          <div class="font-medium">${escapeHtml(s.name)} <span class="text-sm text-slate-400">lvl ${s.level}</span></div>
+          <div class="text-sm text-slate-200 mt-1">${escapeHtml(s.description || '')}</div>
+        </div>
+        <div class="ml-4 flex gap-2">
+          <button data-edit-fields='[{"name":"name","label":"Name","type":"text","value":"${escapeHtml(s.name)}"},{"name":"level","label":"Level","type":"number","value":"${s.level ?? 0}"},{"name":"description","label":"Description","type":"textarea","value":"${escapeHtml(s.description || '')}"}]' data-edit-url="${apiBase}/spells/${s.id}" data-edit-method="PUT" class="edit px-2 py-1 bg-yellow-500 text-slate-900 rounded text-sm">Edit</button>
+          <button data-id="${s.id}" class="delete px-2 py-1 bg-red-600 text-slate-100 rounded text-sm">Delete</button>
+        </div>
+      `;
+      container.appendChild(el);
+    }
+    container.querySelectorAll('.delete').forEach(btn => btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.dataset.id;
+      if (!confirm('Eliminare lo spell?')) return;
+      const r = await fetch(apiBase + '/spells/' + id, { method: 'DELETE', credentials: 'include', headers: { ...authHeader() } });
+      if (r.ok) fetchSpells(); else alert('Delete failed');
+    }));
+    // Edit buttons are handled by public/js/modals.js via data-edit-* attributes.
+  }
+
+  document.getElementById('createSpellForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('s_name').value.trim();
+    const level = Number(document.getElementById('s_level').value || 0);
+    const description = document.getElementById('s_description').value.trim();
+    if (!name) return alert('Nome richiesto');
+    const r = await fetch(apiBase + '/spells', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify({ name, level, description })
+    });
+    if (r.ok) {
+      document.getElementById('createSpellForm').reset();
+      fetchSpells();
+    } else {
+      alert('Create failed');
+    }
+  });
+
+  function escapeHtml(text) {
+    return (''+text).replace(/[&<>"']/g, s => ({'&':'&','<':'<','>':'>','"':'"',"'":"&#39;"}[s]));
+  }
+
+  // Initial load
+  fetchSpells();
+</script>

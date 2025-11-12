@@ -1,0 +1,77 @@
+<header id="admin-header" class="flex flex-col h-full" role="banner" aria-label="Admin sidebar header">
+  <!-- Top: Brand + collapse handle -->
+  <div class="mb-4 flex items-center justify-between gap-3">
+    <a href="/admin" class="flex items-center gap-3 no-underline">
+      <div class="w-9 h-9 rounded bg-slate-700 flex items-center justify-center">
+        <svg class="w-5 h-5 text-slate-100" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l3 6 6 .5-4.5 3 1.5 6-5-3-5 3 1.5-6L3 8.5 9 8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/></svg>
+      </div>
+      <div class="ml-2 hidden md:block">
+        <div class="text-sm font-semibold text-slate-100">World of DnD</div>
+        <div class="text-xs text-slate-400">Admin</div>
+      </div>
+    </a>
+
+    <!-- Collapse/expand control: triggers layout's collapse logic via #collapseBtn fallback -->
+    <div class="flex items-center gap-2">
+      <button id="collapseBtn" aria-label="Collapse sidebar" class="md:inline-flex items-center justify-center p-1 rounded text-slate-300 hover:bg-slate-700/40">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+      </button>
+      <button id="sidebarToggle" aria-label="Toggle labels" class="md:hidden inline-flex items-center justify-center p-1 rounded text-slate-300 hover:bg-slate-700/40">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 4v16M4 12h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation: icon-first, labels hide when collapsed -->
+  <nav class="flex-1 flex flex-col gap-1" role="navigation" aria-label="Admin menu">
+    <a href="/admin" class="nav-item flex items-center gap-3 px-2 py-2 rounded hover:bg-slate-700" title="Dashboard">
+      <span class="nav-icon inline-flex items-center justify-center text-slate-300" aria-hidden="true">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h18M3 6h18M3 18h18" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+      </span>
+      <span class="nav-label ml-1 text-sm text-slate-100">Dashboard</span>
+    </a>
+
+    <a href="/admin/spells" class="nav-item flex items-center gap-3 px-2 py-2 rounded hover:bg-slate-700" title="Spells">
+      <span class="nav-icon inline-flex items-center justify-center text-slate-300" aria-hidden="true">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v20M5 8l7 4 7-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+      </span>
+      <span class="nav-label ml-1 text-sm text-slate-100">Spells</span>
+    </a>
+
+    <a href="/admin/talents" class="nav-item flex items-center gap-3 px-2 py-2 rounded hover:bg-slate-700" title="Talents">
+      <span class="nav-icon inline-flex items-center justify-center text-slate-300" aria-hidden="true">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l4 8-4 4-4-4 4-8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+      </span>
+      <span class="nav-label ml-1 text-sm text-slate-100">Talents</span>
+    </a>
+
+    <a href="/admin/users" class="nav-item flex items-center gap-3 px-2 py-2 rounded hover:bg-slate-700" title="Users">
+      <span class="nav-icon inline-flex items-center justify-center text-slate-300" aria-hidden="true">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 11c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM8 11c1.657 0 3-1.343 3-3S9.657 5 8 5 5 6.343 5 8s1.343 3 3 3zM2 20c0-2.5 3-4 6-4s6 1.5 6 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+      </span>
+      <span class="nav-label ml-1 text-sm text-slate-100">Users</span>
+    </a>
+
++
+  </nav>
+
+  <!-- Bottom user area -->
+  <div class="mt-auto pt-4 border-t border-slate-700 flex flex-col gap-2 items-start">
+    {{#if user}}
+      <div class="flex items-center gap-3 px-2">
+        <div class="w-8 h-8 rounded bg-slate-700 flex items-center justify-center text-slate-100">U</div>
+        <div class="hidden md:block text-sm text-slate-100">
+          <div class="leading-tight">{{user.email}}</div>
+          <a href="/admin/logout" class="text-xs text-red-400 hover:underline">Logout</a>
+        </div>
+      </div>
+    {{else}}
+      <a href="/admin/login" class="nav-item flex items-center gap-3 px-2 py-2 rounded hover:bg-slate-700">
+        <span class="nav-icon inline-flex items-center justify-center text-slate-300" aria-hidden="true">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+        </span>
+        <span class="nav-label ml-1 text-sm text-slate-100">Login</span>
+      </a>
+    {{/if}}
+  </div>
+</header>

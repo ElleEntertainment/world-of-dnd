@@ -1,0 +1,22 @@
+{{!< ../layout}}
+<div class="prose">
+  <div class="card">
+    <h2 class="text-2xl font-semibold content-heading">Benvenuto, {{user.email}}</h2>
+    <p class="muted">Usa il pannello per gestire spells, talents e utenti.</p>
+
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a href="/admin/spells" class="block p-4 form-card hover:shadow-md">
+        <div class="font-medium text-slate-100">Gestisci Spells</div>
+        <div class="text-sm muted">Crea, modifica ed elimina spells</div>
+      </a>
+      <a href="/admin/talents" class="block p-4 form-card hover:shadow-md">
+        <div class="font-medium text-slate-100">Gestisci Talents</div>
+        <div class="text-sm muted">Gestisci talents e icone</div>
+      </a>
+      <a href="/admin/users" class="block p-4 form-card hover:shadow-md">
+        <div class="font-medium text-slate-100">Lista Utenti</div>
+        <div class="text-sm muted">Visualizza e gestisci utenti registrati</div>
+      </a>
+    </div>
+  </div>
+</div>

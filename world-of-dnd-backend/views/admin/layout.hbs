@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin - World of DnD</title>
+
+    <!-- Tailwind via CDN (Play CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style>
+      /* Global helpers */
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      /* Ensure body fills viewport and app can use flex layout */
+      html, body, #app-root { height: 100%; margin: 0; }
+
+      /* Apple-like glass effect & card styles (dark) */
+      :root {
+        --glass-bg: rgba(255,255,255,0.035);
+        --glass-border: rgba(255,255,255,0.06);
+        --accent: #60a5fa;
+      }
+      .glass {
+        background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+        border: 1px solid var(--glass-border);
+        backdrop-filter: blur(10px) saturate(120%);
+        -webkit-backdrop-filter: blur(10px) saturate(120%);
+      }
+      .card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.04);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+        color: var(--tw-text-opacity, 1);
+      }
+      .form-card { background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.04); }
+
+      /* Footer fixed bottom glass */
+      #site-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 40;
+        padding: 0.5rem 1rem;
+        background: rgba(17,24,39,0.6);
+        backdrop-filter: blur(6px);
+        border-top: 1px solid rgba(255,255,255,0.03);
+      }
+
+      /* Layout sizing */
+      .app-main { height: calc(100vh - 56px); overflow:auto; padding: 1.5rem; }
+
+      /* Improve readability inside content */
+      .content-heading { color: #e6eefb; }
+      .muted { color: rgba(255,255,255,0.7); }
+
+      /* Sidebar collapse styles */
+      .sidebar { transition: width 180ms ease; }
+      .sidebar.collapsed { width: 72px !important; min-width:72px; overflow:visible; }
+      .sidebar .nav-label { display: inline-block; margin-left: 6px; vertical-align: middle; }
+      .sidebar.collapsed .nav-label { display: none; }
+      .sidebar.collapsed .mt-auto { display:none; } /* hide bottom user area when collapsed for compactness */
+      .sidebar .nav-icon { width: 20px; height: 20px; display:inline-block; vertical-align:middle; }
+
+      /* Compact link centering */
+      .sidebar.collapsed a { justify-content:center; padding-left:0.5rem; padding-right:0.5rem; }
+
+      /* Mobile overlay when sidebar opened */
+      .overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 30; display: none;
+      }
+      .overlay.show { display: block; }
+    </style>
+  </head>
+  <body class="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-slate-100 h-screen">
+    <div id="app-root" class="h-full flex">
+      {{!-- Sidebar and mobile topbar are not rendered when a view requests noSidebar --}}
+      {{#unless noSidebar}}
+      <!-- Sidebar -->
+      <aside id="sidebar" class="sidebar w-72 bg-slate-800/60 glass border-r border-slate-700 p-4 hidden md:block overflow-auto no-scrollbar">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <button id="collapseBtn" aria-label="Collapse sidebar" class="text-slate-300 p-1 rounded hover:bg-slate-700/40">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+            </button>
+            <div class="ml-2 hidden md:block text-slate-100">Menu</div>
+          </div>
+        </div>
+        {{> header}}
+      </aside>
+
+      <!-- Mobile topbar with hamburger -->
+      <div id="mobile-topbar" class="md:hidden flex items-center justify-between bg-slate-800/60 glass p-3 border-b border-slate-700 w-full">
+        <button id="hamburger" aria-label="Toggle menu" class="text-slate-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div class="text-lg font-semibold">World of DnD — Admin</div>
+        <div></div>
+      </div>
+      {{/unless}}
+
+      <!-- Main content area -->
+      <main id="main" class="flex-1 h-full app-main">
+        <div class="max-w-full mx-auto space-y-6">
+          {{{body}}}
+        </div>
+      </main>
+    </div>
+
+    <!-- Mobile overlay -->
+    <div id="overlay" class="overlay"></div>
+
+    <!-- Fixed footer (glass) -->
+    <div id="site-footer" class="glass text-slate-300">
+      <div class="max-w-full mx-auto flex items-center justify-between">
+        <div>{{> footer}}</div>
+        <div class="text-xs muted">© World of DnD</div>
+      </div>
+    </div>
+
+    <script>
+      // Hamburger toggle + overlay for mobile
+      (function () {
+        const hb = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        if (!hb || !sidebar) return;
+
+        function openSidebar() {
+          sidebar.classList.remove('hidden');
+          sidebar.classList.add('absolute','z-50','left-0','top-0','h-screen');
+          overlay.classList.add('show');
+        }
+        function closeSidebar() {
+          sidebar.classList.add('hidden');
+          sidebar.classList.remove('absolute','z-50','left-0','top-0','h-screen');
+          overlay.classList.remove('show');
+        }
+
+        hb.addEventListener('click', () => {
+          if (sidebar.classList.contains('hidden')) openSidebar(); else closeSidebar();
+        });
+
+        overlay.addEventListener('click', closeSidebar);
+        // ensure sidebar visible on resize to large screens
+        window.addEventListener('resize', () => {
+          if (window.innerWidth >= 768) {
+            sidebar.classList.remove('absolute','z-50','left-0','top-0','h-screen');
+            overlay.classList.remove('show');
+            sidebar.classList.remove('hidden');
+          }
+        });
+      })();
+
+      // Sidebar collapse/expand for desktop, persisted in localStorage
+      (function () {
+        const collapseBtn = document.getElementById('collapseBtn');
+        const sidebar = document.getElementById('sidebar');
+        if (!collapseBtn || !sidebar) return;
+
+        const STORAGE_KEY = 'admin_sidebar_collapsed';
+
+        function applyState(collapsed) {
+          if (collapsed) {
+            sidebar.classList.add('collapsed');
+          } else {
+            sidebar.classList.remove('collapsed');
+          }
+        }
+
+        // initialize from storage (only apply on desktop view)
+        try {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          const collapsed = stored === '1';
+          if (window.innerWidth >= 768) applyState(collapsed);
+        } catch (e) { /* ignore storage errors */ }
+
+        collapseBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const isCollapsed = sidebar.classList.toggle('collapsed');
+          try {
+            localStorage.setItem(STORAGE_KEY, isCollapsed ? '1' : '0');
+          } catch (e) { /* ignore */ }
+        });
+
+        // Keep responsive behavior: ensure collapsed applies only on desktop
+        window.addEventListener('resize', () => {
+          if (window.innerWidth < 768) {
+            // expand for mobile overlay usage
+            sidebar.classList.remove('collapsed');
+          } else {
+            // reapply stored state
+            try {
+              const stored = localStorage.getItem(STORAGE_KEY);
+              const collapsed = stored === '1';
+              applyState(collapsed);
+            } catch (e) {}
+          }
+        });
+      })();
+    </script>
+
+    <script src="/public/js/modals.js"></script>
+    <script>
+      // Initialize admin edit modals once DOM is ready. Logs if helper missing.
+      window.addEventListener('DOMContentLoaded', () => {
+        try {
+          if (typeof window !== 'undefined' && window.initAdminEditModals) {
+            window.initAdminEditModals();
+          } else {
+            console.warn('initAdminEditModals not found; modals feature may not be available.');
+          }
+        } catch (e) {
+          console.error('initAdminEditModals error', e);
+        }
+      });
+    </script>
+  </body>
+</html>
