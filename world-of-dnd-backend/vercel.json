@@ -1,8 +1,6 @@
 {
   "version": 2,
-  "build": {
-    "command": "npm run prisma:generate"
-  },
+  "installCommand": "npm install && npm run prisma:generate",
   "builds": [
     {
       "src": "src/main.ts",
