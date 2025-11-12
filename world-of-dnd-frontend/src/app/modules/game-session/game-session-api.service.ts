@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface GameSession {
   id: number;
@@ -46,7 +47,7 @@ export interface PaginatedResponse<T> {
   providedIn: 'root'
 })
 export class GameSessionApiService {
-  private readonly apiUrl = 'http://localhost:3000/game-sessions';
+  private readonly apiUrl = `${environment.apiUrl}/game-sessions`;
 
   constructor(private http: HttpClient) {}
 
