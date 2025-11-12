@@ -1,0 +1,178 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                   Int           @id @default(autoincrement())
+  email                String        @unique
+  password             String
+  name                 String?
+  isVerified           Boolean       @default(false)
+  verificationToken    String?
+  refreshToken         String?
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  gameSessions         GameSession[]
+
+  @@map("users")
+}
+
+model GameSession {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isActive    Boolean   @default(true)
+  data        Json?     // Dati dinamici della sessione (punti ferita, statistiche, etc.)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  characters  Character[]
+
+  @@map("game_sessions")
+}
+
+model Character {
+  id            Int         @id @default(autoincrement())
+  gameSessionId Int
+  gameSession   GameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+  name          String
+  race          String?
+  class         String?
+  level         Int         @default(1)
+  experience    Int         @default(0)
+  
+  // Caratteristiche
+  strength      Int         @default(10)
+  dexterity     Int         @default(10)
+  constitution  Int         @default(10)
+  intelligence  Int         @default(10)
+  wisdom        Int         @default(10)
+  charisma      Int         @default(10)
+  
+  // Combattimento
+  hitPoints     Int         @default(0)
+  maxHitPoints  Int         @default(0)
+  armorClass    Int         @default(10)
+  initiative    Int         @default(0)
+  
+  // Altro
+  notes         String?     @db.Text
+  avatarUrl     String?
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  skills        CharacterSkill[]
+  spells        CharacterSpell[]
+  talents       CharacterTalent[]
+
+  @@map("characters")
+}
+
+model Skill {
+  id               Int              @id @default(autoincrement())
+  name             String
+  keyAbility       String           // FOR, DES, COS, INT, SAG, CAR
+  keyAbilityShort  String           // forza, destrezza, etc.
+  description      String?          @db.Text
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  characterSkills  CharacterSkill[]
+
+  @@map("skills")
+}
+
+model CharacterSkill {
+  id          Int       @id @default(autoincrement())
+  characterId Int
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  skillId     Int
+  skill       Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  checked     Boolean   @default(false)
+  checked2    Boolean   @default(false)
+  ranks       Int       @default(0)
+  miscMod     Int       @default(0)
+  total       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([characterId, skillId])
+  @@map("character_skills")
+}
+
+model Spell {
+  id              Int             @id @default(autoincrement())
+  name            String
+  description     String          @db.Text
+  level           Int             @default(0)
+  school          String?
+  castingTime     String?
+  range           String?
+  components      String?
+  duration        String?
+  icon            String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  characterSpells CharacterSpell[]
+
+  @@map("spells")
+}
+
+model CharacterSpell {
+  id          Int       @id @default(autoincrement())
+  characterId Int
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  spellId     Int
+  spell       Spell     @relation(fields: [spellId], references: [id], onDelete: Cascade)
+  isPrepared  Boolean   @default(false)
+  timesUsed   Int       @default(0)
+  slot        Int?      // optional slot/position for spell-bar (0..9)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([characterId, spellId])
+  @@map("character_spells")
+}
+
+model Talent {
+  id               Int              @id @default(autoincrement())
+  name             String
+  description      String           @db.Text
+  prerequisites    String?
+  icon             String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  characterTalents CharacterTalent[]
+
+  @@map("talents")
+}
+
+model CharacterTalent {
+  id          Int       @id @default(autoincrement())
+  characterId Int
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  talentId    Int
+  talent      Talent    @relation(fields: [talentId], references: [id], onDelete: Cascade)
+  acquiredAt  Int       @default(1) // Livello a cui è stato acquisito
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([characterId, talentId])
+  @@map("character_talents")
+}
