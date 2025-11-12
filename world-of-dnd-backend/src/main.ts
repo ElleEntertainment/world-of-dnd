@@ -1,21 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
-import * as cookieParser from 'cookie-parser';
+const cookieParser = require('cookie-parser');
 import { AppModule } from './app.module';
 
-async function bootstrap() {
+async function setupApp(): Promise<any> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  
+
   // Parse cookies so we can read auth token from cookie for server-rendered admin pages
   app.use(cookieParser());
 
   // Simple middleware: protect server-rendered admin pages (but not /admin/api) and redirect to /admin/login when no valid token
-  // Uses jsonwebtoken to verify token server-side so views can redirect instead of returning JSON 401 from guards.
   const jwt = require('jsonwebtoken');
   app.use((req, res, next) => {
     const url = (req.originalUrl || req.url || '').toString();
-    // Only handle top-level admin views (exclude API, the token setter and the login page itself)
     if (
       url.startsWith('/admin') &&
       !url.startsWith('/admin/api') &&
@@ -50,15 +48,35 @@ async function bootstrap() {
   const hbs = require('hbs');
   hbs.registerPartials(join(__dirname, '..', 'views', 'admin', 'partials'));
 
-  // Abilita CORS per permettere le chiamate dal frontend (allow all origins)
+  // Enable CORS
   app.enableCors({
     origin: true,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', '*'],
   });
-  
-  await app.listen(process.env.PORT ?? 3000);
-  console.log(`Application is running on: http://localhost:${process.env.PORT ?? 3000}`);
+
+  await app.init();
+  return app.getHttpAdapter().getInstance();
 }
-bootstrap();
+
+// Export a serverless-compatible handler for Vercel
+let serverInstance: any = null;
+export default async function handler(req: any, res: any) {
+  if (!serverInstance) {
+    serverInstance = await setupApp();
+  }
+  return serverInstance(req, res);
+}
+
+// When run directly (local dev), listen on a port
+if (require.main === module) {
+  (async () => {
+    const server = await setupApp();
+    const port = process.env.PORT ?? 3000;
+    server.listen(port, () => {
+      // eslint-disable-next-line no-console
+      console.log(`Application is running on: http://localhost:${port}`);
+    });
+  })();
+}
