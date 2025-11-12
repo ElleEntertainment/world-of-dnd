@@ -1,5 +1,6 @@
 import { Route } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
+import { authGuard } from './shared/guards/auth.guard';
 
 export const appRoutes: Array<Route> = [
   { path: '', pathMatch: 'full', redirectTo: 'landing' },
@@ -19,6 +20,7 @@ export const appRoutes: Array<Route> = [
       },
       {
         path: 'game-session',
+        canActivate: [authGuard],
         loadChildren: () =>
           import('./modules/game-session/game-session.module').then(m => m.GameSessionModule),
       },

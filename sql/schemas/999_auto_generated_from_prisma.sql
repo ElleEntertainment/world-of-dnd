@@ -1,0 +1,232 @@
+-- AUTO-GENERATED idempotent migration from prisma/schema.prisma
+-- Review before executing. This migration tries to create tables if missing and add missing columns.
+BEGIN;
+-- Model: User
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  email TEXT,
+  password TEXT,
+  name TEXT,
+  isVerified BOOLEAN,
+  verificationToken TEXT,
+  refreshToken TEXT,
+  resetPasswordToken TEXT,
+  resetPasswordExpires TEXT,
+  createdAt TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updatedAt TIMESTAMP WITH TIME ZONE,
+  gameSessions TEXT[]
+);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS name TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS isVerified BOOLEAN;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS verificationToken TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS refreshToken TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS resetPasswordToken TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS resetPasswordExpires TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS createdAt TIMESTAMP WITH TIME ZONE DEFAULT now();
+ALTER TABLE users ADD COLUMN IF NOT EXISTS updatedAt TIMESTAMP WITH TIME ZONE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS gameSessions TEXT[];
+-- Model: GameSession
+CREATE TABLE IF NOT EXISTS game_sessions (
+  id SERIAL PRIMARY KEY,
+  name TEXT,
+  description TEXT,
+  userId INTEGER,
+  user TEXT,
+  isActive BOOLEAN,
+  data TEXT,
+  createdAt TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updatedAt TIMESTAMP WITH TIME ZONE,
+  characters TEXT[]
+);
+ALTER TABLE game_sessions ADD COLUMN IF NOT EXISTS name TEXT;
+ALTER TABLE game_sessions ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE game_sessions ADD COLUMN IF NOT EXISTS userId INTEGER;
+ALTER TABLE game_sessions ADD COLUMN IF NOT EXISTS user TEXT;
+ALTER TABLE game_sessions ADD COLUMN IF NOT EXISTS isActive BOOLEAN;
+ALTER TABLE game_sessions ADD COLUMN IF NOT EXISTS data TEXT;
+ALTER TABLE game_sessions ADD COLUMN IF NOT EXISTS createdAt TIMESTAMP WITH TIME ZONE DEFAULT now();
+ALTER TABLE game_sessions ADD COLUMN IF NOT EXISTS updatedAt TIMESTAMP WITH TIME ZONE;
+ALTER TABLE game_sessions ADD COLUMN IF NOT EXISTS characters TEXT[];
+-- Model: Character
+CREATE TABLE IF NOT EXISTS characters (
+  id SERIAL PRIMARY KEY,
+  gameSessionId INTEGER,
+  gameSession TEXT,
+  name TEXT,
+  race TEXT,
+  class TEXT,
+  level INTEGER,
+  experience INTEGER,
+  strength INTEGER,
+  dexterity INTEGER,
+  constitution INTEGER,
+  intelligence INTEGER,
+  wisdom INTEGER,
+  charisma INTEGER,
+  hitPoints INTEGER,
+  maxHitPoints INTEGER,
+  armorClass INTEGER,
+  initiative INTEGER,
+  notes TEXT,
+  avatarUrl TEXT,
+  createdAt TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updatedAt TIMESTAMP WITH TIME ZONE,
+  skills TEXT[],
+  spells TEXT[],
+  talents TEXT[]
+);
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS gameSessionId INTEGER;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS gameSession TEXT;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS name TEXT;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS race TEXT;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS class TEXT;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS level INTEGER;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS experience INTEGER;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS strength INTEGER;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS dexterity INTEGER;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS constitution INTEGER;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS intelligence INTEGER;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS wisdom INTEGER;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS charisma INTEGER;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS hitPoints INTEGER;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS maxHitPoints INTEGER;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS armorClass INTEGER;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS initiative INTEGER;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS avatarUrl TEXT;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS createdAt TIMESTAMP WITH TIME ZONE DEFAULT now();
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS updatedAt TIMESTAMP WITH TIME ZONE;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS skills TEXT[];
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS spells TEXT[];
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS talents TEXT[];
+-- Model: Skill
+CREATE TABLE IF NOT EXISTS skills (
+  id SERIAL PRIMARY KEY,
+  name TEXT,
+  keyAbility TEXT,
+  keyAbilityShort TEXT,
+  description TEXT,
+  createdAt TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updatedAt TIMESTAMP WITH TIME ZONE,
+  characterSkills TEXT[]
+);
+ALTER TABLE skills ADD COLUMN IF NOT EXISTS name TEXT;
+ALTER TABLE skills ADD COLUMN IF NOT EXISTS keyAbility TEXT;
+ALTER TABLE skills ADD COLUMN IF NOT EXISTS keyAbilityShort TEXT;
+ALTER TABLE skills ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE skills ADD COLUMN IF NOT EXISTS createdAt TIMESTAMP WITH TIME ZONE DEFAULT now();
+ALTER TABLE skills ADD COLUMN IF NOT EXISTS updatedAt TIMESTAMP WITH TIME ZONE;
+ALTER TABLE skills ADD COLUMN IF NOT EXISTS characterSkills TEXT[];
+-- Model: CharacterSkill
+CREATE TABLE IF NOT EXISTS character_skills (
+  id SERIAL PRIMARY KEY,
+  characterId INTEGER,
+  character TEXT,
+  skillId INTEGER,
+  skill TEXT,
+  checked BOOLEAN,
+  checked2 BOOLEAN,
+  ranks INTEGER,
+  miscMod INTEGER,
+  total INTEGER,
+  createdAt TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updatedAt TIMESTAMP WITH TIME ZONE
+);
+ALTER TABLE character_skills ADD COLUMN IF NOT EXISTS characterId INTEGER;
+ALTER TABLE character_skills ADD COLUMN IF NOT EXISTS character TEXT;
+ALTER TABLE character_skills ADD COLUMN IF NOT EXISTS skillId INTEGER;
+ALTER TABLE character_skills ADD COLUMN IF NOT EXISTS skill TEXT;
+ALTER TABLE character_skills ADD COLUMN IF NOT EXISTS checked BOOLEAN;
+ALTER TABLE character_skills ADD COLUMN IF NOT EXISTS checked2 BOOLEAN;
+ALTER TABLE character_skills ADD COLUMN IF NOT EXISTS ranks INTEGER;
+ALTER TABLE character_skills ADD COLUMN IF NOT EXISTS miscMod INTEGER;
+ALTER TABLE character_skills ADD COLUMN IF NOT EXISTS total INTEGER;
+ALTER TABLE character_skills ADD COLUMN IF NOT EXISTS createdAt TIMESTAMP WITH TIME ZONE DEFAULT now();
+ALTER TABLE character_skills ADD COLUMN IF NOT EXISTS updatedAt TIMESTAMP WITH TIME ZONE;
+-- Model: Spell
+CREATE TABLE IF NOT EXISTS spells (
+  id SERIAL PRIMARY KEY,
+  name TEXT,
+  description TEXT,
+  level INTEGER,
+  school TEXT,
+  castingTime TEXT,
+  range TEXT,
+  components TEXT,
+  duration TEXT,
+  icon TEXT,
+  createdAt TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updatedAt TIMESTAMP WITH TIME ZONE,
+  characterSpells TEXT[]
+);
+ALTER TABLE spells ADD COLUMN IF NOT EXISTS name TEXT;
+ALTER TABLE spells ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE spells ADD COLUMN IF NOT EXISTS level INTEGER;
+ALTER TABLE spells ADD COLUMN IF NOT EXISTS school TEXT;
+ALTER TABLE spells ADD COLUMN IF NOT EXISTS castingTime TEXT;
+ALTER TABLE spells ADD COLUMN IF NOT EXISTS range TEXT;
+ALTER TABLE spells ADD COLUMN IF NOT EXISTS components TEXT;
+ALTER TABLE spells ADD COLUMN IF NOT EXISTS duration TEXT;
+ALTER TABLE spells ADD COLUMN IF NOT EXISTS icon TEXT;
+ALTER TABLE spells ADD COLUMN IF NOT EXISTS createdAt TIMESTAMP WITH TIME ZONE DEFAULT now();
+ALTER TABLE spells ADD COLUMN IF NOT EXISTS updatedAt TIMESTAMP WITH TIME ZONE;
+ALTER TABLE spells ADD COLUMN IF NOT EXISTS characterSpells TEXT[];
+-- Model: CharacterSpell
+CREATE TABLE IF NOT EXISTS character_spells (
+  id SERIAL PRIMARY KEY,
+  characterId INTEGER,
+  character TEXT,
+  spellId INTEGER,
+  spell TEXT,
+  isPrepared BOOLEAN,
+  timesUsed INTEGER,
+  createdAt TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updatedAt TIMESTAMP WITH TIME ZONE
+);
+ALTER TABLE character_spells ADD COLUMN IF NOT EXISTS characterId INTEGER;
+ALTER TABLE character_spells ADD COLUMN IF NOT EXISTS character TEXT;
+ALTER TABLE character_spells ADD COLUMN IF NOT EXISTS spellId INTEGER;
+ALTER TABLE character_spells ADD COLUMN IF NOT EXISTS spell TEXT;
+ALTER TABLE character_spells ADD COLUMN IF NOT EXISTS isPrepared BOOLEAN;
+ALTER TABLE character_spells ADD COLUMN IF NOT EXISTS timesUsed INTEGER;
+ALTER TABLE character_spells ADD COLUMN IF NOT EXISTS createdAt TIMESTAMP WITH TIME ZONE DEFAULT now();
+ALTER TABLE character_spells ADD COLUMN IF NOT EXISTS updatedAt TIMESTAMP WITH TIME ZONE;
+-- Model: Talent
+CREATE TABLE IF NOT EXISTS talents (
+  id SERIAL PRIMARY KEY,
+  name TEXT,
+  description TEXT,
+  prerequisites TEXT,
+  icon TEXT,
+  createdAt TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updatedAt TIMESTAMP WITH TIME ZONE,
+  characterTalents TEXT[]
+);
+ALTER TABLE talents ADD COLUMN IF NOT EXISTS name TEXT;
+ALTER TABLE talents ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE talents ADD COLUMN IF NOT EXISTS prerequisites TEXT;
+ALTER TABLE talents ADD COLUMN IF NOT EXISTS icon TEXT;
+ALTER TABLE talents ADD COLUMN IF NOT EXISTS createdAt TIMESTAMP WITH TIME ZONE DEFAULT now();
+ALTER TABLE talents ADD COLUMN IF NOT EXISTS updatedAt TIMESTAMP WITH TIME ZONE;
+ALTER TABLE talents ADD COLUMN IF NOT EXISTS characterTalents TEXT[];
+-- Model: CharacterTalent
+CREATE TABLE IF NOT EXISTS character_talents (
+  id SERIAL PRIMARY KEY,
+  characterId INTEGER,
+  character TEXT,
+  talentId INTEGER,
+  talent TEXT,
+  acquiredAt INTEGER,
+  createdAt TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updatedAt TIMESTAMP WITH TIME ZONE
+);
+ALTER TABLE character_talents ADD COLUMN IF NOT EXISTS characterId INTEGER;
+ALTER TABLE character_talents ADD COLUMN IF NOT EXISTS character TEXT;
+ALTER TABLE character_talents ADD COLUMN IF NOT EXISTS talentId INTEGER;
+ALTER TABLE character_talents ADD COLUMN IF NOT EXISTS talent TEXT;
+ALTER TABLE character_talents ADD COLUMN IF NOT EXISTS acquiredAt INTEGER;
+ALTER TABLE character_talents ADD COLUMN IF NOT EXISTS createdAt TIMESTAMP WITH TIME ZONE DEFAULT now();
+ALTER TABLE character_talents ADD COLUMN IF NOT EXISTS updatedAt TIMESTAMP WITH TIME ZONE;
+COMMIT;

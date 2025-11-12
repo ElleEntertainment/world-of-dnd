@@ -1,5 +1,7 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { BagItem } from '../bag/bag-modal.component';
 import { Talent } from '../talents/talents-modal.component';
 import { LocalGameSessionData } from '../game-session-storage.service';
@@ -12,7 +14,9 @@ import { Spell } from '../spells/spells-modal.component';
   templateUrl: './game-session-mobile.component.html',
   styleUrl: './game-session-mobile.component.scss'
 })
-export class GameSessionMobileComponent implements OnInit {
+export class GameSessionMobileComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+  
   campaignId: string | null = null;
 
   showSection: 'character' | 'bag' | 'coins' | 'spells' | 'talents' | 'skills' = 'character';
@@ -28,12 +32,13 @@ export class GameSessionMobileComponent implements OnInit {
 
   dndVersion = '3.5';
 
-  allSpells: Spell[] = GameSessionSharedService.ALL_SPELLS;
-  allTalents: Talent[] = GameSessionSharedService.ALL_TALENTS;
+  allSpells: Spell[] = [];
+  allTalents: Talent[] = [];
   spellBar: (Spell | null)[] = Array(10).fill(null);
+  isLoading = false;
 
   characterSheet: any = {};
-  skillsList: SkillRow[] = GameSessionSharedService.DEFAULT_SKILLS.map(s => ({ ...s }));
+  skillsList: SkillRow[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -43,6 +48,48 @@ export class GameSessionMobileComponent implements OnInit {
   ngOnInit() {
     this.campaignId = this.route.snapshot.paramMap.get('id');
     this.loadLocalData();
+    this.loadGameData();
+    
+    // Subscribe to loading state
+    this.shared.loading$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(loading => this.isLoading = loading);
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // Carica skills, spells e talents dal backend
+  loadGameData() {
+    // Carica skills
+    this.shared.loadSkillsFromServer()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (skills) => {
+          if (this.skillsList.length === 0) {
+            this.skillsList = skills;
+          }
+        },
+        error: (err) => console.error('Errore caricamento skills:', err)
+      });
+
+    // Carica spells
+    this.shared.loadSpellsFromServer()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (spells) => this.allSpells = spells,
+        error: (err) => console.error('Errore caricamento spells:', err)
+      });
+
+    // Carica talents
+    this.shared.loadTalentsFromServer()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (talents) => this.allTalents = talents,
+        error: (err) => console.error('Errore caricamento talents:', err)
+      });
   }
 
   addBagItem() {
@@ -81,10 +128,16 @@ export class GameSessionMobileComponent implements OnInit {
       skillsList: this.skillsList
     };
     this.shared.persistAll(this.campaignId, data);
+    this.shared.syncToServer(this.campaignId, data)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => console.log('Dati sincronizzati con successo'),
+        error: (err) => console.error('Errore sincronizzazione:', err)
+      });
   }
 
   @HostListener('window:online')
   onOnline() {
-    this.shared.stubSyncToServer();
+    this.persistAll();
   }
 }
