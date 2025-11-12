@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { CommonModule } from '@angular/common';
 import { GameSessionComponent } from './game-session.component';
+import { SessionsListComponent } from './sessions-list/sessions-list.component';
 import { BagModalComponent } from './bag/bag-modal.component';
 import { CoinsModalComponent } from './bag/coins-modal.component';
 import { SpellsModalComponent } from './spells/spells-modal.component';
@@ -14,12 +15,13 @@ import { AnnotazioniModalComponent } from './annotazioni-modal/annotazioni-modal
 import { EberronMapDialogComponent } from './eberron-map/eberron-map-dialog.component';
 
 const routes: Routes = [
+  { path: '', component: SessionsListComponent },
   { path: ':id', component: GameSessionComponent },
-  // puoi aggiungere altre route qui se necessario
 ];
 
 @NgModule({
   declarations: [
+    SessionsListComponent,
     GameSessionComponent,
     BagModalComponent,
     CoinsModalComponent,

@@ -1,0 +1,57 @@
+<div class="min-h-screen p-6 bg-[linear-gradient(180deg,#0f1316cc_0%,#080a0eef_100%)] text-slate-100">
+  <div class="max-w-5xl mx-auto space-y-6">
+    <header class="p-6 rounded-2xl bg-white/6 backdrop-blur-md border border-white/6 shadow-xl">
+      <h1 class="text-2xl font-semibold text-white">Le mie campagne</h1>
+      <p class="text-sm text-slate-200/90 mt-1">Crea o unisciti a una campagna. Se crei una campagna sarai il Dungeon Master.</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Create card -->
+      <section class="p-5 rounded-xl bg-white/4 backdrop-blur-md border border-white/6 shadow-lg flex flex-col gap-4">
+        <h2 class="text-lg font-semibold text-white">Nuova Campagna</h2>
+
+        <div class="flex flex-col gap-3">
+          <input class="px-3 py-2 rounded-lg bg-white/12 border border-white/10 text-slate-900 placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-white/20"
+                 type="text" placeholder="Nome campagna" [(ngModel)]="newName" />
+
+          <input class="px-3 py-2 rounded-lg bg-white/12 border border-white/10 text-slate-900 placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-white/20"
+                 type="text" placeholder="Descrizione (opzionale)" [(ngModel)]="newDescription" />
+        </div>
+
+        <div class="flex items-center gap-3 mt-2">
+          <button class="inline-flex items-center px-4 py-2 rounded-lg bg-gradient-to-br from-white/95 to-slate-100 text-slate-900 font-semibold shadow-md disabled:opacity-60"
+                  (click)="createSession()" [disabled]="creating || !newName.trim()">
+            <span *ngIf="!creating">Crea campagna</span>
+            <span *ngIf="creating">Creazione...</span>
+          </button>
+        </div>
+
+        <div *ngIf="error" class="text-sm text-red-400 font-medium mt-2">{{ error }}</div>
+      </section>
+
+      <!-- List card -->
+      <section class="p-4 rounded-xl bg-white/4 backdrop-blur-md border border-white/6 shadow-lg">
+        <h2 class="text-lg font-semibold text-white mb-3">Campagne</h2>
+
+        <div *ngIf="loading" class="text-center text-slate-300 py-6">Caricamento...</div>
+        <div *ngIf="!loading && sessions.length === 0" class="text-center text-slate-400 py-6">Nessuna campagna trovata</div>
+
+        <ul *ngIf="!loading && sessions.length" class="space-y-3">
+          <li *ngFor="let s of sessions" tabindex="0"
+              (click)="openSession(s)"
+              class="flex justify-between items-center p-3 rounded-lg cursor-pointer bg-gradient-to-b from-white/3 to-white/2 border border-white/4 hover:scale-[1.01] transition-transform">
+            <div class="flex flex-col">
+              <div class="text-white font-semibold">{{ s.name }}</div>
+              <div class="text-sm text-slate-300">{{ s.description || 'Nessuna descrizione' }}</div>
+            </div>
+
+            <div class="flex flex-col items-end text-xs text-slate-300">
+              <div>DM: <span class="text-sm text-white">{{ s.userId }}</span></div>
+              <div class="mt-1">{{ s.createdAt | date:'short' }}</div>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</div>

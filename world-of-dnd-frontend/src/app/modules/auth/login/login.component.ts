@@ -19,9 +19,9 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Se l'utente è già autenticato, reindirizza a game-session
+    // Se l'utente è già autenticato, reindirizza alla lista di campagne
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/game-session/1']);
+      this.router.navigate(['/game-session']);
       return;
     }
 
@@ -37,8 +37,8 @@ export class LoginComponent implements OnInit {
     this.authService.login(email, password).subscribe({
       next: (res) => {
         this.error = '';
-        // Reindirizza a game-session dopo login con successo
-        this.router.navigate(['/game-session/1']);
+        // Reindirizza alla lista di campagne dopo login con successo
+        this.router.navigate(['/game-session']);
       },
       error: (err) => {
         this.error = err.error?.message || 'Errore di login';

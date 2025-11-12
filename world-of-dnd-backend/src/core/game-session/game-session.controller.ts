@@ -10,6 +10,7 @@ import {
   Request,
   ParseIntPipe,
   Query,
+  Logger,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GameSessionService } from './game-session.service';
@@ -99,6 +100,26 @@ export class GameSessionController {
     @Body() syncDto: SyncGameSessionDto,
     @Request() req,
   ) {
-    return this.gameSessionService.sync(id, req.user.userId, syncDto.data);
+    // Lightweight logging to inspect incoming payload shape (for debugging)
+    try {
+      Logger.log(`Sync request session=${id} user=${req?.user?.userId}`, 'GameSessionController.sync');
+      Logger.debug({
+        hasData: !!syncDto?.data,
+        dataKeys: syncDto?.data ? Object.keys(syncDto.data) : [],
+        payloadSample: syncDto?.data ? (Array.isArray(syncDto.data.characters) ? `characters:${syncDto.data.characters.length}` : typeof syncDto.data) : 'no-data'
+      }, 'GameSessionController.sync');
+    } catch (e) {
+      // swallow logging errors to avoid breaking request flow
+      console.warn('Logging failed in GameSessionController.sync', e);
+    }
+
+    try {
+      const result = await this.gameSessionService.sync(id, req.user.userId, syncDto.data);
+      Logger.log(`Sync completed session=${id}`, 'GameSessionController.sync');
+      return result;
+    } catch (err) {
+      Logger.error('Sync failed', err, 'GameSessionController.sync');
+      throw err;
+    }
   }
 }

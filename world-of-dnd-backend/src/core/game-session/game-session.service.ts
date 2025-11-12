@@ -210,6 +210,20 @@ export class GameSessionService {
         }
       }
 
+      // Salva il payload grezzo nella colonna JSONB `data` della game session
+      // in modo che il frontend possa ricaricarlo al refresh.
+      try {
+        await tx.gameSession.update({
+          where: { id },
+          data: { data: data }
+        });
+      } catch (e) {
+        // Non fallire l'intera transaction per un problema di salvataggio del JSON.
+        // Loggare l'errore per il debugging (il logger globale può essere usato all'esterno).
+        // eslint-disable-next-line no-console
+        console.warn('Failed to persist session.data JSONB:', e);
+      }
+
       // Ritorna lo stato aggiornato della sessione completo
       return this.findOne(id, userId);
     });

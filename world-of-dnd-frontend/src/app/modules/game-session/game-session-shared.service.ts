@@ -175,9 +175,34 @@ export class GameSessionSharedService {
     }
   }
 
-  persistAll(campaignId: string, data: LocalGameSessionData) {
-    this.saveLocalData(campaignId, data);
-    this.syncToServer(campaignId, data);
+  persistAll(campaignId: string, data: LocalGameSessionData | null) {
+    // If caller didn't provide data, try to load from local storage
+    let payload = data;
+    if (!payload || (typeof payload === 'object' && Object.keys(payload).length === 0)) {
+      const stored = this.loadLocalData(campaignId);
+      if (stored) {
+        payload = stored;
+      }
+    }
+
+    if (!payload) {
+      console.warn('No session data available to persist for', campaignId);
+      return;
+    }
+
+    // Always save the resolved payload locally first
+    this.saveLocalData(campaignId, payload);
+
+    // Trigger remote sync and subscribe so the HTTP request is actually executed.
+    // Keep a minimal subscriber to avoid unhandled errors; errors are also handled inside syncToServer.
+    this.syncToServer(campaignId, payload).subscribe({
+      next: () => {
+        // sync succeeded
+      },
+      error: () => {
+        // sync failed (already logged inside syncToServer)
+      }
+    });
   }
 
   // Sincronizza i dati con il server con retry logic
@@ -190,6 +215,12 @@ export class GameSessionSharedService {
         this.loadingSubject.next(false);
         this.errorSubject.next(null);
         console.log('Sincronizzazione completata con successo');
+        // On successful remote save, clear local cache for this campaign
+        try {
+          this.clearLocalData(campaignId);
+        } catch (e) {
+          console.warn('Failed to clear local session data after sync', e);
+        }
       }),
       catchError(error => {
         this.loadingSubject.next(false);
