@@ -13,6 +13,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { AnnotazioniModalComponent } from './annotazioni-modal/annotazioni-modal.component';
 import { EberronMapDialogComponent } from './eberron-map/eberron-map-dialog.component';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
 
 const routes: Routes = [
   { path: '', component: SessionsListComponent },
@@ -36,7 +38,9 @@ const routes: Routes = [
     CKEditorModule,
     CommonModule,
     FormsModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    LeafletModule,
+    LeafletDrawModule
   ]
 })
 export class GameSessionModule { }

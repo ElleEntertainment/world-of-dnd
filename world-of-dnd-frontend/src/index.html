@@ -7,19 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 
-  <!-- Leaflet loaded at app startup -->
-  <link rel="stylesheet" href="minimap/assets/leaflet.css" />
   <!-- Optional: map-specific styles can stay in the component, but including here keeps HUD styling consistent -->
   <link rel="stylesheet" href="minimap/assets/map.css" />
-  <link href=" https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.min.css " rel="stylesheet">
 </head>
 <body>
   <app-root></app-root>
 
-  <!-- Load Leaflet and plugins at app startup so map component doesn't need to inject them -->
-  <script src="minimap/assets/leaflet.js"></script>
+  <!-- Load Leaflet plugins at app startup (Leaflet and leaflet-draw are now loaded via angular.json) -->
   <script src="minimap/assets/leaflet-plugins/leaflet-ruler.min.js"></script>
-  <script src=" https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.min.js "></script>
   <!-- Do NOT load map.js here (it runs only when the dialog DOM exists) -->
 </body>
 </html>
