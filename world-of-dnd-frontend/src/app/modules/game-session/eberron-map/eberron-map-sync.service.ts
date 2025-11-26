@@ -54,18 +54,19 @@ export class EberronMapSyncService {
             map(session => {
                 // Il server restituisce i dati in session.data.eberronMap
                 const mapData = session?.data?.eberronMap;
-                if (mapData && (mapData.markers || mapData.drawnItems)) {
+                if (mapData && (mapData.markers || mapData.drawnItems || mapData.layers)) {
                     return {
                         markers: mapData.markers || [],
-                        drawnItems: mapData.drawnItems || []
+                        drawnItems: mapData.drawnItems || [],
+                        layers: mapData.layers || []
                     };
                 }
-                return { markers: [], drawnItems: [] };
+                return { markers: [], drawnItems: [], layers: [] };
             }),
             catchError(error => {
                 console.error('Errore nel caricamento dei dati della mappa dal server:', error);
                 // In caso di errore, restituisce dati vuoti (l'app userà localStorage)
-                return of({ markers: [], drawnItems: [] });
+                return of({ markers: [], drawnItems: [], layers: [] });
             })
         );
     }
