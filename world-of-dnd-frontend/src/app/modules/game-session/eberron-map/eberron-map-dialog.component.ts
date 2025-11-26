@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Output, Input, AfterViewInit, OnDestroy } from '@angular/core';
-import * as L from 'leaflet';
-import 'leaflet-draw';
 import { EberronMapSyncService, EberronMapData, LayerState } from './eberron-map-sync.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+
+declare let L: any;
 
 @Component({
     selector: 'app-eberron-map-dialog',
