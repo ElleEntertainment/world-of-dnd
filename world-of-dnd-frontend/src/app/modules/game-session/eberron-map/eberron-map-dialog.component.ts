@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output, Input, AfterViewInit, OnDestroy } from '@angular/core';
 import * as L from 'leaflet';
+import 'leaflet-draw';
 import { EberronMapSyncService, EberronMapData, LayerState } from './eberron-map-sync.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -156,6 +157,24 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
     // Inline map initialization (originally public/minimap/assets/map.js)
     // Placed here to keep map code inside the component as requested.
     private initMap() {
+        // Wait for L.Draw to be defined in a loop and then continue
+        let attempts = 0;
+        const maxAttempts = 10;
+        const interval = setInterval(() => {
+            if (L.Draw) {
+                clearInterval(interval);
+                this.initMapInternal();
+            } else {
+                attempts++;
+                if (attempts >= maxAttempts) {
+                    clearInterval(interval);
+                    console.error('L.Draw not defined after', maxAttempts, 'attempts');
+                }
+            }
+        }, 100);
+    }
+
+    private initMapInternal() {
         try {
             const minZoom = 1;
             const maxZoom = 7;
