@@ -23,9 +23,17 @@ export interface EberronDrawnItem {
     owner?: number;
 }
 
+export interface LayerState {
+    color: string;           // Colore esadecimale del layer
+    name?: string;           // Nome opzionale del layer
+    visible: boolean;        // Stato di visibilità
+    itemCount: number;       // Numero di elementi in questo layer
+}
+
 export interface EberronMapData {
     markers: EberronMarker[];
     drawnItems: EberronDrawnItem[];
+    layers?: LayerState[];   // Stato dei layer (opzionale per compatibilità)
 }
 
 @Injectable({

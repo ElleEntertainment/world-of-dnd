@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Output, Input, AfterViewInit, OnDestroy } from '@angular/core';
 import * as L from 'leaflet';
-import 'leaflet-draw';
-import { EberronMapSyncService, EberronMapData } from './eberron-map-sync.service';
+import { EberronMapSyncService, EberronMapData, LayerState } from './eberron-map-sync.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -24,6 +23,10 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
 
     // Sync state
     isSyncing = false;
+    // Layer management
+    private layerGroups: Map<string, L.FeatureGroup> = new Map();
+    layerStates: LayerState[] = [];
+    private map: any = null;
 
     constructor(private syncService: EberronMapSyncService) { }
 
@@ -84,6 +87,9 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
                         if (mapData.drawnItems && mapData.drawnItems.length > 0) {
                             localStorage.setItem('eberronDrawnItems', JSON.stringify(mapData.drawnItems));
                         }
+                        if (mapData.layers && mapData.layers.length > 0) {
+                            localStorage.setItem('eberronLayerStates', JSON.stringify(mapData.layers));
+                        }
                         resolve();
                     },
                     error: (err) => {
@@ -125,10 +131,12 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
         // Leggi i dati da localStorage
         const markers = localStorage.getItem('eberronMarkers');
         const drawnItems = localStorage.getItem('eberronDrawnItems');
+        const layerStates = localStorage.getItem('eberronLayerStates');
 
         const mapData: EberronMapData = {
             markers: markers ? JSON.parse(markers) : [],
-            drawnItems: drawnItems ? JSON.parse(drawnItems) : []
+            drawnItems: drawnItems ? JSON.parse(drawnItems) : [],
+            layers: layerStates ? JSON.parse(layerStates) : []
         };
 
         this.isSyncing = true;
@@ -168,6 +176,9 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
                 zoomControl: false,
                 attributionControl: false
             }).setView([20.009428770699756, .07578125], 3.5);
+
+            this.map = eberronmap;
+            this.loadLayerStates();
 
             const baseMaps = {
                 "Full Map": fullmap
@@ -518,6 +529,26 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
                 }
             });
 
+            // Layer menu logic
+            const layerMenuBtn = document.getElementById('toggleLayerMenu');
+            const layerMenuDropdown = document.getElementById('layerMenuDropdown');
+
+            if (layerMenuBtn && layerMenuDropdown) {
+                // Toggle on click
+                layerMenuBtn.addEventListener('click', (e: Event) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    layerMenuDropdown.classList.toggle('hidden');
+                });
+
+                // Hide on click outside
+                document.addEventListener('click', (e: any) => {
+                    if (!layerMenuBtn.contains(e.target) && !layerMenuDropdown.contains(e.target)) {
+                        layerMenuDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
             // Function to start drawing with selected tool
             const startDrawing = (drawType: string) => {
                 // Cancel any existing drawing
@@ -533,7 +564,9 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
                 const shapeOptions = {
                     color: currentDrawColor,
                     fillColor: currentDrawColor,
-                    fillOpacity: 0.3
+                    fillOpacity: 1.0,
+                    opacity: 1.0,
+                    weight: 3
                 };
 
                 // Create appropriate draw handler
@@ -620,6 +653,14 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
             // Handle draw created event
             eberronmap.on(L.Draw.Event.CREATED, (event: any) => {
                 const layer = event.layer;
+                const color = layer.options.color || currentDrawColor;
+
+                // Aggiungi al layer group basato sul colore
+                const layerGroup = this.getOrCreateLayerGroup(color);
+                layerGroup.addLayer(layer);
+                this.updateLayerCount(color);
+
+                // Aggiungi anche a drawnItems per compatibilità con edit/delete controls
                 drawnItems.addLayer(layer);
 
                 // Add popup with delete option
@@ -678,7 +719,7 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
                     edit: {
                         selectedPathOptions: {
                             maintainColor: true,
-                            opacity: 0.3
+                            opacity: 1
                         }
                     },
                     remove: true
@@ -746,6 +787,7 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
             localStorage.setItem('eberronDrawnItems', JSON.stringify(data));
             // Sincronizza con il server (debounced)
             this.debouncedSaveToServer();
+            this.saveLayerStates();
         } catch (e) {
             console.error('Errore nel salvataggio degli elementi disegnati:', e);
         }
@@ -768,7 +810,7 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
                                 radius: item.radius,
                                 color: item.color,
                                 fillColor: item.fillColor,
-                                fillOpacity: item.fillOpacity
+                                fillOpacity: 1
                             });
                             break;
                         case 'circlemarker':
@@ -776,21 +818,21 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
                                 radius: item.radius,
                                 color: item.color,
                                 fillColor: item.fillColor,
-                                fillOpacity: item.fillOpacity
+                                fillOpacity: 1
                             });
                             break;
                         case 'rectangle':
                             layer = L.rectangle(item.latlngs, {
                                 color: item.color,
                                 fillColor: item.fillColor,
-                                fillOpacity: item.fillOpacity
+                                fillOpacity: 1
                             });
                             break;
                         case 'polygon':
                             layer = L.polygon(item.latlngs, {
                                 color: item.color,
                                 fillColor: item.fillColor,
-                                fillOpacity: item.fillOpacity
+                                fillOpacity: 1
                             });
                             break;
                         case 'polyline':
@@ -802,6 +844,12 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
 
                     if (layer) {
                         drawnItems.addLayer(layer);
+
+                        // Aggiungi anche al layer group basato sul colore
+                        const color = item.color || item.fillColor || '#3388ff';
+                        const layerGroup = this.getOrCreateLayerGroup(color);
+                        layerGroup.addLayer(layer);
+                        this.updateLayerCount(color);
 
                         // Add popup with delete option
                         const popupContent = `
@@ -859,5 +907,155 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
         link.href = href;
         document.head.appendChild(link);
         if (saveRef) saveRef(link);
+    }
+
+    /**
+ * Ottiene o crea un layer group per un colore specifico
+ */
+    private getOrCreateLayerGroup(color: string): L.FeatureGroup {
+        if (!this.layerGroups.has(color)) {
+            const group = new L.FeatureGroup();
+            if (this.map) {
+                group.addTo(this.map);
+            }
+            this.layerGroups.set(color, group);
+
+            const existingState = this.layerStates.find(s => s.color === color);
+            if (!existingState) {
+                this.layerStates.push({
+                    color: color,
+                    visible: true,
+                    itemCount: 0
+                });
+            }
+        }
+        return this.layerGroups.get(color)!;
+    }
+
+    /**
+     * Aggiorna il conteggio elementi per un layer
+     */
+    private updateLayerCount(color: string): void {
+        const group = this.layerGroups.get(color);
+        const state = this.layerStates.find(s => s.color === color);
+
+        if (group && state) {
+            state.itemCount = group.getLayers().length;
+        }
+    }
+
+    /**
+     * Toggle visibilità di un layer
+     */
+    toggleLayerVisibility(color: string): void {
+        const group = this.layerGroups.get(color);
+        const state = this.layerStates.find(s => s.color === color);
+
+        if (group && state && this.map) {
+            state.visible = !state.visible;
+
+            if (state.visible) {
+                group.addTo(this.map);
+            } else {
+                this.map.removeLayer(group);
+            }
+
+            this.saveLayerStates();
+            this.debouncedSaveToServer();
+        }
+    }
+
+    /**
+     * Salva stati layer in localStorage
+     */
+    private saveLayerStates(): void {
+        try {
+            localStorage.setItem('eberronLayerStates', JSON.stringify(this.layerStates));
+        } catch (e) {
+            console.error('Errore salvataggio stati layer:', e);
+        }
+    }
+
+    /**
+     * Carica stati layer da localStorage
+     */
+    private loadLayerStates(): void {
+        try {
+            const saved = localStorage.getItem('eberronLayerStates');
+            if (saved) {
+                this.layerStates = JSON.parse(saved);
+            }
+        } catch (e) {
+            console.error('Errore caricamento stati layer:', e);
+        }
+    }
+
+    /**
+     * Ottiene lista layer per UI
+     */
+    getLayerStates(): LayerState[] {
+        return this.layerStates.filter(s => s.itemCount > 0);
+    }
+
+    /**
+     * Rinomina un layer
+     */
+    renameLayer(color: string, newName: string): void {
+        const state = this.layerStates.find(s => s.color === color);
+        if (state) {
+            state.name = newName.trim() || undefined;
+            this.saveLayerStates();
+            this.debouncedSaveToServer();
+        }
+    }
+
+    /**
+     * Elimina un layer e tutti i suoi elementi
+     */
+    deleteLayer(color: string): void {
+        const state = this.layerStates.find(s => s.color === color);
+        if (!state) return;
+
+        const layerName = state.name || color;
+        const confirmed = confirm(
+            `Sei sicuro di voler eliminare il layer "${layerName}" e tutti i suoi ${state.itemCount} elementi?\n\nQuesta azione non può essere annullata.`
+        );
+
+        if (!confirmed) return;
+
+        // Rimuovi il layer group dalla mappa
+        const layerGroup = this.layerGroups.get(color);
+        if (layerGroup && this.map) {
+            // Rimuovi tutti i layer dal gruppo
+            layerGroup.clearLayers();
+            this.map.removeLayer(layerGroup);
+            this.layerGroups.delete(color);
+        }
+
+        // Rimuovi lo stato del layer
+        const index = this.layerStates.findIndex(s => s.color === color);
+        if (index !== -1) {
+            this.layerStates.splice(index, 1);
+        }
+
+        // Salva le modifiche
+        this.saveLayerStates();
+
+        // Aggiorna anche drawnItems in localStorage (rimuovi elementi con questo colore)
+        try {
+            const saved = localStorage.getItem('eberronDrawnItems');
+            if (saved) {
+                const items = JSON.parse(saved);
+                const filtered = items.filter((item: any) => {
+                    const itemColor = item.color || item.fillColor;
+                    return itemColor !== color;
+                });
+                localStorage.setItem('eberronDrawnItems', JSON.stringify(filtered));
+            }
+        } catch (e) {
+            console.error('Errore aggiornamento drawnItems:', e);
+        }
+
+        this.debouncedSaveToServer();
     }
 }

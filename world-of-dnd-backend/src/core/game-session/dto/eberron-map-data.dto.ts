@@ -7,6 +7,8 @@ import {
     IsOptional,
     IsString,
     ValidateNested,
+    IsNotEmpty,
+    Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -67,6 +69,22 @@ export class EberronDrawnItemDto {
 }
 
 /**
+ * DTO per lo stato di un layer (raggruppamento per colore)
+ */
+export class LayerStateDto {
+    @IsString()
+    @IsNotEmpty()
+    color!: string;
+
+    @IsBoolean()
+    visible!: boolean;
+
+    @IsInt()
+    @Min(0)
+    itemCount!: number;
+}
+
+/**
  * DTO per i dati completi della mappa Eberron
  */
 export class EberronMapDataDto {
@@ -81,4 +99,10 @@ export class EberronMapDataDto {
     @ValidateNested({ each: true })
     @Type(() => EberronDrawnItemDto)
     drawnItems?: EberronDrawnItemDto[];
+
+    @IsOptional()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => LayerStateDto)
+    layers?: LayerStateDto[];
 }
