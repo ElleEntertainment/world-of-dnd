@@ -4,7 +4,6 @@ import * as L from 'leaflet';
 // Rende L globale così i plugin (leaflet-draw) possono usarla
 (window as any).L = L;
 import 'leaflet-draw';
-import 'leaflet-draw/dist/leaflet.draw.css';
 
 platformBrowserDynamic().bootstrapModule(AppModule)
     .catch(err => console.error(err));
