@@ -1,10 +1,10 @@
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app/app.module';
 
-import 'leaflet';
-import 'leaflet-draw';
+import * as L from 'leaflet';
+(window as any).L = L;    // necessario per alcuni plugin
 
-declare let L: any;
+import 'leaflet-draw';
 
 platformBrowserDynamic().bootstrapModule(AppModule)
     .catch(err => console.error(err));
