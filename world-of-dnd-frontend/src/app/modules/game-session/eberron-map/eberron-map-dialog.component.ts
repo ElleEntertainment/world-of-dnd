@@ -28,6 +28,7 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
     private layerGroups: Map<string, L.FeatureGroup> = new Map();
     layerStates: LayerState[] = [];
     private map: any = null;
+    private readonly defaultFillOpacity = 0.35;
 
     constructor(private syncService: EberronMapSyncService) { }
 
@@ -565,7 +566,7 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
                 const shapeOptions = {
                     color: currentDrawColor,
                     fillColor: currentDrawColor,
-                    fillOpacity: 1.0,
+                    fillOpacity: this.getAppliedFillOpacity(),
                     opacity: 1.0,
                     weight: 3
                 };
@@ -736,6 +737,11 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
         }
     }
 
+    private getAppliedFillOpacity(value?: number): number {
+        const base = typeof value === 'number' ? value : this.defaultFillOpacity;
+        return Math.max(0, Math.min(base, this.defaultFillOpacity));
+    }
+
     private getDrawTypeLabel(type: string): string {
         switch (type) {
             case 'polyline': return 'Linea';
@@ -801,6 +807,8 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
                 const data = JSON.parse(saved);
                 data.forEach((item: any) => {
                     let layer: any;
+                    const fillOpacity = this.getAppliedFillOpacity(item.fillOpacity);
+                    const fillColor = item.fillColor || item.color;
 
                     switch (item.type) {
                         case 'marker':
@@ -810,35 +818,40 @@ export class EberronMapDialogComponent implements AfterViewInit, OnDestroy {
                             layer = L.circle(item.latlng, {
                                 radius: item.radius,
                                 color: item.color,
-                                fillColor: item.fillColor,
-                                fillOpacity: 1
+                                fillColor,
+                                fillOpacity,
+                                opacity: 1
                             });
                             break;
                         case 'circlemarker':
                             layer = L.circleMarker(item.latlng, {
                                 radius: item.radius,
                                 color: item.color,
-                                fillColor: item.fillColor,
-                                fillOpacity: 1
+                                fillColor,
+                                fillOpacity,
+                                opacity: 1
                             });
                             break;
                         case 'rectangle':
                             layer = L.rectangle(item.latlngs, {
                                 color: item.color,
-                                fillColor: item.fillColor,
-                                fillOpacity: 1
+                                fillColor,
+                                fillOpacity,
+                                opacity: 1
                             });
                             break;
                         case 'polygon':
                             layer = L.polygon(item.latlngs, {
                                 color: item.color,
-                                fillColor: item.fillColor,
-                                fillOpacity: 1
+                                fillColor,
+                                fillOpacity,
+                                opacity: 1
                             });
                             break;
                         case 'polyline':
                             layer = L.polyline(item.latlngs, {
-                                color: item.color
+                                color: item.color,
+                                opacity: 1
                             });
                             break;
                     }
